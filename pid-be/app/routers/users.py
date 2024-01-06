@@ -12,6 +12,7 @@ from app.models.requests.UserRequests import (
     PatientRegisterRequest,
     PhysicianRegisterRequest,
     ChangePasswordRequest,
+    LaboratoryRegisterRequest
 )
 from app.models.responses.UserResponses import (
     SuccessfulLoginResponse,
@@ -45,6 +46,7 @@ from app.models.entities.Admin import Admin
 from app.models.entities.Record import Record
 from app.models.entities.Score import Score
 from app.models.entities.Appointment import Appointment
+from app.models.entities.Laboratory import Laboratory
 
 from firebase_admin import firestore, auth
 
@@ -132,7 +134,7 @@ async def login_user(
 )
 async def register(
     register_request: Annotated[
-        Union[PatientRegisterRequest, PhysicianRegisterRequest],
+        Union[PatientRegisterRequest, PhysicianRegisterRequest, LaboratoryRegisterRequest],
         Body(discriminator="role"),
     ]
 ):
@@ -184,11 +186,18 @@ async def register(
         }
         record = Record(**record_data, id=auth_uid)
         record.create()
-    else:
+    elif register_request.role == "physician":
         physician = Physician(
             **register_request.model_dump(exclude_none=True), id=auth_uid
         )
         physician.create()
+    else:
+        print(register_request)
+        laboratory = Laboratory(
+            **register_request.model_dump(exclude_none=True), id=auth_uid
+        )
+        print(laboratory)
+        laboratory.create()
     requests.post(
         "http://localhost:9000/emails/send",
         json={
@@ -234,6 +243,8 @@ def get_user_roles(user_id=Depends(Auth.is_logged_in)):
             roles.append("patient")
         if Physician.is_physician(user_id):
             roles.append("physician")
+        if Laboratory.is_laboratory(user_id):
+            roles.append("laboratory")
         return {"roles": roles}
     except:
         return JSONResponse(

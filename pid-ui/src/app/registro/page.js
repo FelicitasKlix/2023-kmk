@@ -163,6 +163,7 @@ const Registro = () => {
                     >
                         <option value='patient'>Paciente</option>
                         <option value='physician'>Médico</option>
+                        <option value='laboratory'>Laboratorio</option>
                     </select>
                 </div>
                 <div className={styles["form-group"]}>

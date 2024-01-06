@@ -36,6 +36,7 @@ class UserRolesEnum(str, Enum):
     admin = "admin"
     physician = "physician"
     patient = "patient"
+    laboratory = "laboratory"
 
 
 class UserRolesResponse(BaseModel):
