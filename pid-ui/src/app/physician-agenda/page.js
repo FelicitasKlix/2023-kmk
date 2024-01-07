@@ -28,6 +28,8 @@ const PhysicianAgenda = () => {
     const [appointmentIdToDelete, setAppointmentIdToDelete] = useState(null);
     const [disabledCloseAppointmentButton, setDisabledCloseAppointmentButton] =
         useState(false);
+    const [studies, setStudies] = useState([]);
+    const [study, setStudy] = useState("");
 
     const [reviews, setReviews] = useState({
         puntuality: {
@@ -176,6 +178,16 @@ const PhysicianAgenda = () => {
         }
     };
 
+    const fetchStudies = async () => {
+        const response = await axios.get(`${apiURL}studies`, {
+            httpsAgent: agent,
+        });
+        console.log(response.data.studies);
+        response.data.studies == undefined
+            ? setStudies([])
+            : setStudies(response.data.studies);
+    };
+
     const MODAL_STYLES = {
         top: "50%",
         left: "50%",
@@ -214,6 +226,8 @@ const PhysicianAgenda = () => {
             .catch(() => {
                 setIsLoading(false); // Asegúrate de marcar como cargado en caso de error
             });
+
+        fetchStudies();
     }, []);
 
     return (
@@ -280,6 +294,76 @@ const PhysicianAgenda = () => {
                                     setNewObservationContent(e.target.value);
                                 }}
                                 placeholder='Escribe una nueva observación'
+                                required
+                                className={`${styles["observation-input"]} ${
+                                    appointmentAttended === "false"
+                                        ? styles["disabled-input"]
+                                        : ""
+                                }`}
+                                wrap='soft'
+                                disabled={appointmentAttended == "false"}
+                            />
+                        </div>
+                        </div>
+                        <div
+                        className={styles["studies-request-section"]}
+                        //onSubmit={handleStudiesRequest}
+                    >
+                        <div className={styles["title"]}>Laboratorios</div>
+                        <div className={styles["appointment"]}>
+                            <div className={styles["subtitle"]}>
+                                Seleccione un estudio:
+                            </div>
+                            <select
+                                className={styles["select"]}
+                                //name='study'
+                                id='study'
+                                value={study}
+                                required
+                                onChange={(e) => {
+                                    //console.log(e.target.value);
+                                    setStudy(e.target.value);
+                                }}
+                            >
+                                <option value=''>Selecciona un estudio</option>
+                                {studies.map((study) => (
+                                    <option key={study} value={study}>
+                                        {study
+                                            .charAt(0)
+                                            .toUpperCase() +
+                                            study.slice(1)}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <div className={styles["subtitle"]}>
+                                Seleccione un laboratorio:{" "}
+                            </div>
+                            <select
+                                className={styles["select"]}
+                                name='laboratorio'
+                                id='laboratorio'
+                                onChange={(e) => {
+                                    //console.log(e.target.value);
+                                    //setAppointmentAttended(e.target.value);
+                                }}
+                            >
+                                <option value={true}>Lab 1</option>
+                                <option value={false}>Lab 2</option>
+                            </select>
+
+                            <div className={styles["subtitle"]}>
+                                Detalle
+                            </div>
+
+                            <textarea
+                                id='detalle'
+                                //value={newDetailContent}
+                                onChange={(e) => {
+                                    console.log(e.target.value);
+                                    //setNewDetailContent(e.target.value);
+                                }}
+                                placeholder='Escribe un detalle del estudio'
                                 required
                                 className={`${styles["observation-input"]} ${
                                     appointmentAttended === "false"

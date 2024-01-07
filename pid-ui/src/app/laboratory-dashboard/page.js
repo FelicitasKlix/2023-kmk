@@ -10,7 +10,7 @@ import es from "date-fns/locale/es";
 import Modal from "react-modal";
 import axios from "axios";
 import https from "https";
-import { Footer, Header, TabBar } from "../components/header";
+import { Footer, Header, LaboratoryTabBar, TabBar } from "../components/header";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { redirect } from "../components/userCheck";
 import { toast } from "react-toastify";
@@ -68,9 +68,9 @@ const DashboardLaboratory = () => {
 
     return (
         <div className={styles.dashboard}>
-
-            <Header role='patient' />
-
+            <LaboratoryTabBar highlight='Pendientes' />
+            <Header role='laboratory' />
+            
         </div>
     );
 };

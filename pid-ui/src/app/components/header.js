@@ -152,6 +152,46 @@ const PhysicianTabBar = (props) => {
     );
 };
 
+const LaboratoryTabBar = (props) => {
+    const router = useRouter();
+    const handleLogoClick = () => {
+        loginCheck(router);
+    };
+
+    useLayoutEffect(() => {
+        userCheck(router, "laboratory");
+    }, []);
+
+    return (
+        <div className={styles["tab-bar"]}>
+            <div
+                className={`${styles["tab"]} ${
+                    props.highlight === "Pendientes" ? styles["selected-tab"] : ""
+                }`}
+                onClick={handleLogoClick}
+            >
+                Estudios Pendientes
+            </div>
+            <div
+                className={`${styles["tab"]} ${
+                    props.highlight === "Proceso" ? styles["selected-tab"] : ""
+                }`}
+                onClick={() => router.push("/patient-my-record")}
+            >
+                Estudios en Proceso
+            </div>
+            <div
+                className={`${styles["tab"]} ${
+                    props.highlight === "Completados" ? styles["selected-tab"] : ""
+                }`}
+                onClick={() => router.push("/patient-my-record")}
+            >
+                Estudios Completados
+            </div>
+        </div>
+    );
+};
+
 const Footer = () => {
     return (
         <footer className={styles["page-footer"]}>
@@ -160,4 +200,4 @@ const Footer = () => {
     );
 };
 
-export { Header, HeaderSlim, TabBar, PhysicianTabBar, Footer };
+export { Header, HeaderSlim, TabBar, PhysicianTabBar, LaboratoryTabBar, Footer };

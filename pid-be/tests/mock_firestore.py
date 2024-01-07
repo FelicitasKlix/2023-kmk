@@ -28,6 +28,20 @@ if __name__ == "__main__":
         "urologia",
     ]
 
+    lab_studies = [
+        "sangre",
+        "orina",
+        "radiografía",
+        "ecografía",
+        "tomografia",
+        "resonancia",
+        "ultrasonido",
+        "electrocardiograma",
+        "papanicolaou",
+        "mamografiía",
+        "hisopado"
+    ]
+
     blood_types = [
         "A+",
         "A-",
@@ -166,6 +180,9 @@ if __name__ == "__main__":
 
     for gender in genders:
         db.collection("genders").document().set({"gender": gender})
+
+    for study in lab_studies:
+        db.collection("lab_studies").document().set({"name": study})
 
     admin_uid = auth.create_user(**admin_information).uid
     db.collection("superusers").document(admin_uid).set(admin_information)

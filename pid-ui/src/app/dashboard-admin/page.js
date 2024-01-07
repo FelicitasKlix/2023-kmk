@@ -28,6 +28,12 @@ const Admin = () => {
     const [selectedSpecialty, setSelectedSpecialty] = useState("");
     const [disabledSpecialtyAddButton, setDisabledSpecialtyAddButton] =
         useState(false);
+    const [newStudy, setNewStudy] = useState("");
+    const [disabledStudyAddButton, setDisabledStudyAddButton] =
+    useState(false);
+    const [studies, setStudies] = useState([]);
+    const [selectedStudy, setSelectedStudy] = useState("");
+    const [deletingStudy, setDeletingStudy] = useState(false);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -46,6 +52,23 @@ const Admin = () => {
             !firstLoad ? toast.success("Especialidades actualizadas") : null;
         } catch (error) {
             toast.error("Error al cargar especialidades");
+            console.error(error);
+        }
+    };
+
+    const fetchStudies = async () => {
+        try {
+            const response = await axios.get(`${apiURL}studies/`, {
+                httpsAgent: agent,
+            });
+            console.log(response.data.studies);
+            response.data.studies == undefined
+                ? setStudies([])
+                : setStudies(response.data.studies);
+
+            !firstLoad ? toast.success("Estudios actualizados") : null;
+        } catch (error) {
+            toast.error("Error al cargar estudios");
             console.error(error);
         }
     };
@@ -72,26 +95,86 @@ const Admin = () => {
         setDisabledSpecialtyAddButton(false);
     };
 
+    const handleAddStudy = async () => {
+        setDisabledStudyAddButton(true);
+        try {
+            toast.info("Agregando estudio...");
+            const response = await axios.post(
+                `${apiURL}studies/add/${newStudy}`,
+                {
+                    httpsAgent: agent,
+                }
+            );
+            toast.success("Estudio agregado");
+            setNewStudy("");
+            setFirstLoad(true);
+            fetchStudies();
+            setFirstLoad(false);
+        } catch (error) {
+            console.error(error);
+            toast.error("Error al agregar especialidad");
+        }
+        setDisabledStudyAddButton(false);
+    };
+
     const handleDeleteClick = (specialty) => {
         setSelectedSpecialty(specialty);
         setShowModal(true);
     };
 
+    const handleDeleteStudyClick = (study) => {
+        setSelectedStudy(study);
+        setDeletingStudy(true);
+        setShowModal(true);
+    };
+
     const handleDeleteConfirmation = async () => {
         setShowModal(false);
-        try {
-            toast.info("Borrando especialidad...");
-            const response = await axios.delete(
-                `${apiURL}specialties/delete/${selectedSpecialty}`
-            );
-            console.log(response.data);
-            toast.success("Especialidad eliminada exitosamente");
-            fetchSpecialties();
-        } catch (error) {
-            console.error(error);
-            toast.error("Error al borrar especialidad");
+        if (deletingStudy){
+            try {
+                toast.info("Borrando estudio...");
+                const response = await axios.delete(
+                    `${apiURL}studies/delete/${selectedStudy}`
+                );
+                console.log(response.data);
+                toast.success("Estudio eliminado exitosamente");
+                fetchStudies();
+            } catch (error) {
+                console.error(error);
+                toast.error("Error al borrar estudio");
+            }
+        }
+        else{
+            try {
+                toast.info("Borrando especialidad...");
+                const response = await axios.delete(
+                    `${apiURL}specialties/delete/${selectedSpecialty}`
+                );
+                console.log(response.data);
+                toast.success("Especialidad eliminada exitosamente");
+                fetchSpecialties();
+            } catch (error) {
+                console.error(error);
+                toast.error("Error al borrar especialidad");
+            }
         }
     };
+
+    // const handleDeleteStudyConfirmation = async () => {
+    //     setShowModal(false);
+    //     try {
+    //         toast.info("Borrando estudio...");
+    //         const response = await axios.delete(
+    //             `${apiURL}studies/delete/${selectedStudy}`
+    //         );
+    //         console.log(response.data);
+    //         toast.success("Estudio eliminado exitosamente");
+    //         fetchStudies();
+    //     } catch (error) {
+    //         console.error(error);
+    //         toast.error("Error al borrar estudio");
+    //     }
+    // };
 
     const fetchPendingPhysicians = async () => {
         try {
@@ -240,6 +323,7 @@ const Admin = () => {
         userCheck(router, "admin").then(() => {
             fetchSpecialties();
             fetchMetrics();
+            fetchStudies();
             fetchPhysicians();
             fetchBlockedPhysicians();
             fetchPendingPhysicians().then(() => setIsLoading(false));
@@ -352,6 +436,99 @@ const Admin = () => {
                                 )}
                             </div>
                         </div>
+
+                        
+                        <div className={styles.form}>
+                            <div className={styles["title"]}>
+                                Estudios
+                            </div>
+                            <Image
+                                src='/refresh_icon.png'
+                                alt='Notificaciones'
+                                className={styles["refresh-icon"]}
+                                width={200}
+                                height={200}
+                                onClick={() => {
+                                    toast.info(
+                                        "Actualizando estudios..."
+                                    );
+                                    fetchStudies();
+                                }}
+                            />
+
+                            <div className={styles["subtitle"]}>
+                                Agregar Estudios
+                            </div>
+                            <input
+                                type='text'
+                                id='study'
+                                name='study'
+                                placeholder='Estudio'
+                                value={newStudy}
+                                onChange={(e) =>
+                                    setNewStudy(e.target.value)
+                                }
+                            />
+                            <button
+                                className={`${styles["add-button"]} ${
+                                    disabledStudyAddButton
+                                        ? styles["disabled-button"]
+                                        : ""
+                                }`}
+                                onClick={handleAddStudy}
+                                disabled={disabledStudyAddButton}
+                            >
+                                Agregar
+                            </button>
+                            <div className={styles["admin-scrollable-section"]}>
+                                {studies.length > 0 ? (
+                                    <>
+                                        {studies.map((study) => (
+                                            <div
+                                                key={study}
+                                                className={
+                                                    styles[
+                                                        "specialty-container"
+                                                    ]
+                                                }
+                                            >
+                                                <p>
+                                                    {study
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        study.slice(1)}
+                                                </p>
+                                                <div
+                                                    className={
+                                                        styles[
+                                                            "appointment-buttons-container"
+                                                        ]
+                                                    }
+                                                >
+                                                    <Image
+                                                        src='/trash_icon.png'
+                                                        alt='borrar'
+                                                        className={styles.logo}
+                                                        width={25}
+                                                        height={25}
+                                                        onClick={() => {
+                                                            handleDeleteStudyClick(
+                                                                study
+                                                            );
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <div className={styles["subtitle"]}>
+                                        No hay estudios
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        
 
                         <div className={styles.form}>
                             <div className={styles["title"]}>
