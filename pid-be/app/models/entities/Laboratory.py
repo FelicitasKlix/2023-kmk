@@ -28,6 +28,11 @@ class Laboratory:
     @staticmethod
     def get_by_id(id):
         return db.collection("laboratories").document(id).get().to_dict()
+    
+    @staticmethod
+    def get_all():
+        labs = db.collection("laboratories").get()
+        return [lab.to_dict()["first_name"] for lab in labs]
 
     @staticmethod
     def is_laboratory(id):

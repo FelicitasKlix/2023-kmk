@@ -30,6 +30,8 @@ const PhysicianAgenda = () => {
         useState(false);
     const [studies, setStudies] = useState([]);
     const [study, setStudy] = useState("");
+    const [labs, setLabs] = useState([]);
+    const [lab, setLab] = useState("");
 
     const [reviews, setReviews] = useState({
         puntuality: {
@@ -188,6 +190,16 @@ const PhysicianAgenda = () => {
             : setStudies(response.data.studies);
     };
 
+    const fetchLabs = async () => {
+        const response = await axios.get(`${apiURL}labs`, {
+            httpsAgent: agent,
+        });
+        console.log(response.data.labs);
+        response.data.labs == undefined
+            ? setLabs([])
+            : setLabs(response.data.labs);
+    };
+
     const MODAL_STYLES = {
         top: "50%",
         left: "50%",
@@ -228,6 +240,7 @@ const PhysicianAgenda = () => {
             });
 
         fetchStudies();
+        fetchLabs();
     }, []);
 
     return (
@@ -341,15 +354,24 @@ const PhysicianAgenda = () => {
                             </div>
                             <select
                                 className={styles["select"]}
-                                name='laboratorio'
+                                //name='study'
                                 id='laboratorio'
+                                value={lab}
+                                required
                                 onChange={(e) => {
                                     //console.log(e.target.value);
-                                    //setAppointmentAttended(e.target.value);
+                                    setLab(e.target.value);
                                 }}
                             >
-                                <option value={true}>Lab 1</option>
-                                <option value={false}>Lab 2</option>
+                                <option value=''>Selecciona un laboratorio</option>
+                                {labs.map((lab) => (
+                                    <option key={lab} value={lab}>
+                                        {lab
+                                            .charAt(0)
+                                            .toUpperCase() +
+                                            lab.slice(1)}
+                                    </option>
+                                ))}
                             </select>
 
                             <div className={styles["subtitle"]}>
