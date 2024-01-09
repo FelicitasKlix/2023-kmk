@@ -10,6 +10,7 @@ class Laboratory:
     last_name: str
     email: str
     id: str
+    approved: str
 
     def __init__(
         self,
@@ -18,12 +19,14 @@ class Laboratory:
         last_name: str,
         email: str,
         id: str,
+        approved: str = "pending",
     ):
         self.role = role
         self.name = name
         self.last_name = last_name
         self.email = email
         self.id = id
+        self.approved = approved
 
     @staticmethod
     def get_by_id(id):
@@ -38,6 +41,19 @@ class Laboratory:
     def is_laboratory(id):
         return db.collection("laboratories").document(id).get().exists
 
+    @staticmethod
+    def get_approved_labs():
+        approved_labs = (
+            db.collection("laboratories").where("approved", "==", "approved").get()
+        )
+        return [lab.to_dict() for lab in approved_labs]
+    
+    @staticmethod
+    def get_pending_labs():
+        pending_labs = (
+            db.collection("laboratories").where("approved", "==", "pending").get()
+        )
+        return [lab.to_dict() for lab in pending_labs]
 
     def create(self):
         if db.collection("laboratories").document(self.id).get().exists:
@@ -51,5 +67,6 @@ class Laboratory:
                 "first_name": self.name,
                 "last_name": self.last_name,
                 "email": self.email,
+                "approved": self.approved,
             }
         )

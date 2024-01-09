@@ -7,6 +7,7 @@ from fastapi import APIRouter, status, Depends
 from fastapi.responses import JSONResponse
 
 from app.models.entities.Physician import Physician
+from app.models.entities.Laboratory import Laboratory
 from app.models.entities.Auth import Auth
 from app.models.entities.Admin import Admin
 from app.models.responses.AdminResponses import (
@@ -25,6 +26,9 @@ from app.models.responses.ValidationResponses import (
     GetBlockedPhysiciansError,
     AdminSpecialtiesGetError,
     SuccessfulAdminSpecialtiesGetResponse,
+    AllLaboratoriesPendingValidationsResponse,
+    AllApprovedLaboratoriesResponse,
+    GetApprovedLaboratoriesError
 )
 
 load_dotenv()
@@ -349,3 +353,130 @@ def regsiter_admin(
 def get_specialties_with_physician_count(uid=Depends(Auth.is_admin)):
     specialies_with_physician_count = Admin.get_specialies_with_physician_count()
     return {"specialties": specialies_with_physician_count}
+
+@router.post(
+    "/approve-laboratory/{laboratory_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=SuccessfullValidationResponse,
+    responses={
+        400: {"model": ValidationErrorResponse},
+        401: {"model": ValidationErrorResponse},
+        403: {"model": ValidationErrorResponse},
+        500: {"model": ValidationErrorResponse},
+    },
+)
+async def approve_laboratory(laboratory_id: str, uid=Depends(Auth.is_admin)):
+    """
+    Validate a laboratory.
+
+    This will allow superusers to approve laboratories.
+
+    This path operation will:
+
+    * Validate a laboratory.
+    * Change the _approved_ field from Laboratory from _pending_ to _approved_.
+    * Throw an error if the validation fails.
+    """
+    try:
+        if not Laboratory.is_laboratory(laboratory_id):
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"detail": "Can only approve laboratories"},
+            )
+        Admin.approve_laboratory(laboratory_id)
+        lab = Laboratory.get_by_id(laboratory_id)
+        requests.post(
+            "http://localhost:9000/emails/send",
+            json={
+                "type": "APPROVED_LABORATORY",
+                "data": {
+                    "email": lab["email"],
+                },
+            },
+        )
+        return {"message": "Laboratory validated successfully"}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+
+@router.get(
+    "/laboratories-pending",
+    status_code=status.HTTP_200_OK,
+    response_model=AllLaboratoriesPendingValidationsResponse,
+    responses={
+        401: {"model": GetPendingValidationsError},
+        403: {"model": GetPendingValidationsError},
+        500: {"model": GetPendingValidationsError},
+    },
+)
+def get_all_laboratories_pending_validations(uid=Depends(Auth.is_admin)):
+    """
+    Get all laboratories pending approval.
+
+    This will allow superusers to retrieve all pending validations.
+
+    This path operation will:
+
+    * Return all of laboratories pending validations.
+    * Throw an error if appointment retrieving fails.
+    """
+    try:
+        laboratories_to_validate = Laboratory.get_pending_labs()
+        return {"laboratories_to_validate": laboratories_to_validate}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+
+@router.post(
+    "/deny-laboratory/{laboratory_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=SuccessfullValidationResponse,
+    responses={
+        400: {"model": ValidationErrorResponse},
+        401: {"model": ValidationErrorResponse},
+        403: {"model": ValidationErrorResponse},
+        500: {"model": ValidationErrorResponse},
+    },
+)
+async def deny_laboratory(laboratory_id: str, uid=Depends(Auth.is_admin)):
+    """
+    Validate a laboratory.
+
+    This will allow superusers to deny laboratories.
+
+    This path operation will:
+
+    * Validate a laboratory.
+    * Change the _approved_ field from Laboratory from _pending_ to _denied_.
+    * Throw an error if the validation fails.
+    """
+    try:
+        if not Laboratory.is_laboratory(laboratory_id):
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"detail": "Can only deny laboratories"},
+            )
+        lab = Laboratory.get_by_id(laboratory_id)
+        Admin.deny_laboratory(laboratory_id)
+        requests.post(
+            "http://localhost:9000/emails/send",
+            json={
+                "type": "PHYSICIAN_DENIED_ACCOUNT",
+                "data": {
+                    "email": lab["email"],
+                },
+            },
+        )
+        return {"message": "Laboratory denied successfully"}
+    except Exception as e:
+        print(e)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )

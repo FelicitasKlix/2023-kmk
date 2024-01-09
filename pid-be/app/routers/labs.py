@@ -11,6 +11,10 @@ from app.models.responses.LabsResponses import (
     GetLabsResponse,
     GetLabsError,
 )
+from app.models.responses.ValidationResponses import (
+    AllApprovedLaboratoriesResponse,
+    GetApprovedLaboratoriesError
+)
 
 router = APIRouter(
     prefix="/labs",
@@ -27,7 +31,7 @@ router = APIRouter(
         500: {"model": GetLabsError},
     },
 )
-def get_all_labs():
+def get_all_labs(uid=Depends(Auth.is_logged_in)):
     """
     Get all labs.
 
@@ -41,6 +45,36 @@ def get_all_labs():
     try:
         labs = Laboratory.get_all()
         return {"labs": labs}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+@router.get(
+    "/approved-laboratories",
+    status_code=status.HTTP_200_OK,
+    response_model=AllApprovedLaboratoriesResponse,
+    responses={
+        401: {"model": GetApprovedLaboratoriesError},
+        403: {"model": GetApprovedLaboratoriesError},
+        500: {"model": GetApprovedLaboratoriesError},
+    },
+)
+def get_all_approved_laboratories(uid=Depends(Auth.is_logged_in)):
+    """
+    Get all approved laboratories.
+
+    This will allow superusers to retrieve all approved laboratories.
+
+    This path operation will:
+
+    * Return all of the approved laboratories.
+    * Throw an error if appointment retrieving fails.
+    """
+    try:
+        appoved_laboratories = Laboratory.get_approved_labs()
+        return {"appoved_laboratories": appoved_laboratories}
     except:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

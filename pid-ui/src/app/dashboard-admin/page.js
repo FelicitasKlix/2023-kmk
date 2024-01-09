@@ -34,7 +34,7 @@ const Admin = () => {
     const [studies, setStudies] = useState([]);
     const [selectedStudy, setSelectedStudy] = useState("");
     const [deletingStudy, setDeletingStudy] = useState(false);
-
+    const [pendingLaboratories, setPendingLaboratories] = useState([]);
     const agent = new https.Agent({
         rejectUnauthorized: false,
     });
@@ -195,6 +195,25 @@ const Admin = () => {
         }
     };
 
+    const fetchPendingLaboratories = async () => {
+        try {
+            const response = await axios.get(
+                `${apiURL}admin/laboratories-pending`,
+                {
+                    httpsAgent: agent,
+                }
+            );
+            console.log(response.data.laboratories_to_validate);
+            setPendingLaboratories(response.data.laboratories_to_validate);
+            !firstLoad ? toast.success("Laboratorios actualizados") : null;
+        } catch (error) {
+            console.error(error);
+            !firstLoad
+                ? toast.error("Error al actualizar los laboratorios")
+                : null;
+        }
+    };
+
     const fetchPhysicians = async () => {
         try {
             const response = await axios.get(
@@ -303,6 +322,47 @@ const Admin = () => {
         }
     };
 
+    const handleApproveLaboratory = async (laboratory) => {
+        try {
+            toast.info("Aprobando laboratorio...");
+            console.log(laboratory.id);
+            const response = await axios.post(
+                `${apiURL}admin/approve-laboratory/${laboratory.id}`,
+                {
+                    httpsAgent: agent,
+                }
+            );
+            console.log(response.data);
+            toast.success("Laboratorio aprobado");
+            setFirstLoad(true);
+            fetchPendingLaboratories();
+            setFirstLoad(false);
+        } catch (error) {
+            console.log(error);
+            toast.error("Error al aprobar laboratorio");
+        }
+    };
+
+    const handleDenyLaboratory = async (laboratory) => {
+        try {
+            toast.info("Bloquando laboratorio...");
+            console.log(laboratory.id);
+            const response = await axios.post(
+                `${apiURL}admin/deny-laboratory/${laboratory.id}`,
+                {
+                    httpsAgent: agent,
+                }
+            );
+            toast.success("Laboratorio denegado");
+            setFirstLoad(true);
+            fetchPendingLaboratories();
+            setFirstLoad(false);
+        } catch (error) {
+            console.log(error);
+            toast.error("Error al denegar laboratorio");
+        }
+    };
+
     const fetchMetrics = async () => {
         try {
             const response = await axios.get(`${apiURL}dashboard/admin`, {
@@ -327,6 +387,7 @@ const Admin = () => {
             fetchPhysicians();
             fetchBlockedPhysicians();
             fetchPendingPhysicians().then(() => setIsLoading(false));
+            fetchPendingLaboratories().then(() => setIsLoading(false));
             setFirstLoad(false);
         });
     }, []);
@@ -767,6 +828,89 @@ const Admin = () => {
                                     // If there are no pending doctor approvals, display the message
                                     <div className={styles["subtitle"]}>
                                         No hay profesionales bloqueados
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className={styles.form}>
+                            <div className={styles["title"]}>
+                                Laboratorios pendientes de aprobación
+                            </div>
+                            <Image
+                                src='/refresh_icon.png'
+                                alt='Notificaciones'
+                                className={styles["refresh-icon"]}
+                                width={200}
+                                height={200}
+                                onClick={() => {
+                                    toast.info("Actualizando laboratorios...");
+                                    fetchPendingLaboratories();
+                                }}
+                            />
+                            <div className={styles["admin-section"]}>
+                                {pendingLaboratories.length > 0 ? (
+                                    <div>
+                                        {pendingLaboratories.map((lab) => (
+                                            <div
+                                                key={lab.id}
+                                                className={
+                                                    styles["appointment"]
+                                                }
+                                            >
+                                                <div
+                                                    className={
+                                                        styles["subtitle"]
+                                                    }
+                                                >
+                                                    {lab.first_name +
+                                                        " " +
+                                                        lab.last_name}
+                                                </div>
+                                                <p>E-mail: {lab.email}</p>
+                                                <div
+                                                    className={
+                                                        styles[
+                                                            "appointment-buttons-container"
+                                                        ]
+                                                    }
+                                                >
+                                                    <button
+                                                        className={
+                                                            styles[
+                                                                "approve-button"
+                                                            ]
+                                                        }
+                                                        onClick={() =>
+                                                            handleApproveLaboratory(
+                                                                lab
+                                                            )
+                                                        }
+                                                    >
+                                                        Aprobar
+                                                    </button>
+
+                                                    <button
+                                                        className={
+                                                            styles[
+                                                                "delete-button"
+                                                            ]
+                                                        }
+                                                        onClick={() =>
+                                                            handleDenyLaboratory(
+                                                                lab
+                                                            )
+                                                        }
+                                                    >
+                                                        Bloquear
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles["subtitle"]}>
+                                        No hay aprobaciones pendientes
                                     </div>
                                 )}
                             </div>

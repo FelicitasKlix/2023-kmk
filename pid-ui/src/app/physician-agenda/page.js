@@ -191,13 +191,13 @@ const PhysicianAgenda = () => {
     };
 
     const fetchLabs = async () => {
-        const response = await axios.get(`${apiURL}labs`, {
+        const response = await axios.get(`${apiURL}labs/approved-laboratories`, {
             httpsAgent: agent,
         });
-        console.log(response.data.labs);
-        response.data.labs == undefined
+        console.log(response.data);
+        response.data.appoved_laboratories == undefined
             ? setLabs([])
-            : setLabs(response.data.labs);
+            : setLabs(response.data.appoved_laboratories);
     };
 
     const MODAL_STYLES = {
@@ -366,10 +366,10 @@ const PhysicianAgenda = () => {
                                 <option value=''>Selecciona un laboratorio</option>
                                 {labs.map((lab) => (
                                     <option key={lab} value={lab}>
-                                        {lab
+                                        {lab.email
                                             .charAt(0)
                                             .toUpperCase() +
-                                            lab.slice(1)}
+                                            (lab.email).slice(1)}
                                     </option>
                                 ))}
                             </select>
