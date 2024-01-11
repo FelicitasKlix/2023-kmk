@@ -22,3 +22,10 @@ class RequestStudyResponse(BaseModel):
 
 class RequestStudyError(BaseModel):
     detail: str
+
+class GetPendingStudiesResponse(BaseModel):
+    studies: list
+
+
+class GetPendingStudiesError(BaseModel):
+    detail: str

@@ -75,7 +75,6 @@ class MedicalStudy:
         studies = db.collection("medicalStudies").where("status", "==", "finished").get()
         return [study.to_dict() for study in studies]
     
-    #get pending medical studies for a laboratory
     @staticmethod
     def get_pending_medical_studies_for_laboratory(laboratory_id):
         studies = db.collection("medicalStudies").where("laboratory_id", "==", laboratory_id).where("status", "==", "pending").get()

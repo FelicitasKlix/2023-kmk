@@ -24,11 +24,12 @@ registerLocale("es", es);
 const DashboardLaboratory = () => {
     const [isLoading, setIsLoading] = useState(true);
     const apiURL = process.env.NEXT_PUBLIC_API_URL;
+    const [studies, setStudies] = useState([]);
     const router = useRouter();
 
-    // const agent = new https.Agent({
-    //     rejectUnauthorized: false,
-    // });
+    const agent = new https.Agent({
+        rejectUnauthorized: false,
+    });
 
 
     const customStyles = {
@@ -54,16 +55,31 @@ const DashboardLaboratory = () => {
         },
     };
 
+    const fetchPendingStudies = async () => {
+        try {
+            const response = await axios.get(
+                `${apiURL}labs/pending-studies`
+            );
+            console.log(response.data.studies);
+            response.data.studies == undefined
+                ? setStudies([])
+                : setStudies(response.data.studies);
+        } catch (error) {
+            toast.error("Error al obtener los estudios pendientes");
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         axios.defaults.headers.common = {
             Authorization: `bearer ${localStorage.getItem("token")}`,
         };
-        // checkPendingReviews()
-        //     .then(() => {
-        //         fetchSpecialties();
-        //         fetchAppointments();
-        //     })
-        //     .then(() => setIsLoading(false));
+        fetchPendingStudies()
+            .then(() => setIsLoading(false)) // Marcar como cargado cuando la respuesta llega
+            .catch(() => {
+                setIsLoading(false); // Asegúrate de marcar como cargado en caso de error
+                toast.error("Error al obtener los datos del usuario");
+            });
     }, []);
 
     return (
@@ -71,6 +87,124 @@ const DashboardLaboratory = () => {
             <LaboratoryTabBar highlight='Pendientes' />
             <Header role='laboratory' />
             
+            {isLoading ? (
+                <p>Cargando...</p>
+            ) : (
+                <>
+                    <div className={styles["tab-content"]}>
+                        <div className={styles.form}>
+                            <div className={styles["title"]}>
+                                Estudios Pendientes
+                            </div>
+                            <Image
+                                src="/refresh_icon.png"
+                                alt="Notificaciones"
+                                className={styles["refresh-icon"]}
+                                width={200}
+                                height={200}
+                                onClick={() => {
+                                    toast.info("Actualizando estudios pendientes...");
+                                    fetchPendingStudies();
+                                }}
+                            />
+                            <div className={styles["appointments-section"]}>
+                                {studies.length > 0 ? (
+                                    // If there are appointments, map through them and display each appointment
+                                    <div>
+                                        {/* ... */}
+                                        {studies.map((study) => (
+                                            <div
+                                                key={study.id}
+                                                className={
+                                                    styles["appointment"]
+                                                }
+                                            >
+                                                <div
+                                                    className={
+                                                        styles["subtitle"]
+                                                    }
+                                                >
+                                                    Estudio:{" "}
+                                                    {study.title
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        (study.title).slice(1)}
+                                                </div>
+                                                <p>
+                                                    Fecha y hora:{" "}
+                                                    {new Date(
+                                                        study.request_date * 1000
+                                                    ).toLocaleString("es-AR")}
+                                                </p>
+                                                <p>
+                                                    Detalle:{" "}
+                                                    {study.details
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        (study.details).slice(1)}
+                                                </p>
+                                                {/* <div
+                                                    className={
+                                                        styles[
+                                                            "appointment-buttons-container"
+                                                        ]
+                                                    }
+                                                >
+                                                    <button
+                                                        className={
+                                                            styles[
+                                                                "approve-button"
+                                                            ]
+                                                        }
+                                                        onClick={() =>
+                                                            handleApproveAppointment(
+                                                                appointment.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Confirmar{" "}
+                                                    </button>
+
+                                                    <button
+                                                        className={
+                                                            styles[
+                                                                "delete-button"
+                                                            ]
+                                                        }
+                                                        onClick={() =>
+                                                            handleDenyClick(
+                                                                appointment.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Rechazar
+                                                    </button>
+                                                </div> */}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    // If there are no appointments, display the message
+                                    <div className={styles["subtitle"]}>
+                                        No hay estudios pendientes
+                                    </div>
+                                )}
+                                {/* ... */}
+                            </div>
+                            {/* Modal de confirmación
+                            <ConfirmationModal
+                                    isOpen={showModal}
+                                    closeModal={() => setShowModal(false)}
+                                    confirmAction={handleDenyAppointment}
+                                    message="¿Estás seguro de que deseas rechazar este turno?"
+                                />  */}
+                        </div>
+                    </div>
+
+                    <Footer />
+                </>
+            )}
+
         </div>
     );
 };
