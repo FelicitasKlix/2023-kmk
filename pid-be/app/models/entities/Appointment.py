@@ -126,6 +126,14 @@ class Appointment:
         if appointment_document.exists:
             return Appointment(**appointment_document.to_dict())
         return None
+    
+    @staticmethod
+    def get_physician_from_appointment(id):
+        return db.collection("appointments").document(id).get().to_dict()["physician_id"]
+    
+    @staticmethod
+    def get_patient_from_appointment(id):
+        return db.collection("appointments").document(id).get().to_dict()["patient_id"]
 
     @staticmethod
     def is_appointment(id):

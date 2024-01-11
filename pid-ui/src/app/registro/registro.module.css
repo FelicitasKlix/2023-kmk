@@ -142,3 +142,13 @@
 .sign-in-link a:hover {
     text-decoration: underline;
 }
+
+.password-input-container {
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password-button {
+    margin-left: 8px;
+    margin-bottom: 25px;
+}

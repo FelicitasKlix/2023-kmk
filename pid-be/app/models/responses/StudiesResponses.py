@@ -16,3 +16,9 @@ class UpdateStudiesResponse(BaseModel):
 
 class UpdateStudiesError(BaseModel):
     detail: str
+
+class RequestStudyResponse(BaseModel):
+    message: str
+
+class RequestStudyError(BaseModel):
+    detail: str

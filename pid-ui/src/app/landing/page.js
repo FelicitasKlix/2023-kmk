@@ -16,6 +16,7 @@ const Landing = () => {
     const [password, setPassword] = useState("");
     const [disabledLoginButton, setDisabledLoginButton] = useState(false);
     const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -100,13 +101,23 @@ const Landing = () => {
                 </div>
                 <div className={styles["form-group"]}>
                     <label htmlFor='password'>Contraseña</label>
+                    <div className={styles["password-input-container"]}>
                     <input
-                        type='password'
+                        //type='password'
+                        type={showPassword ? "text" : "password"}
                         id='password'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
+                    <button
+                    type="button"
+                    className={styles["toggle-password-button"]}
+                    onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? "🔒" : "👁"}
+                    </button>
+                    </div>
                 </div>
                 <button
                     type='submit'

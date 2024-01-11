@@ -4,12 +4,17 @@ from fastapi.responses import JSONResponse
 from app.models.entities.Auth import Auth
 from app.models.entities.Admin import Admin
 from app.models.entities.Study import Study
+from app.models.entities.MedicalStudy import MedicalStudy
+from app.models.entities.Appointment import Appointment
 from app.models.responses.StudiesResponses import (
     GetStudiesResponse,
     GetStudiesError,
     UpdateStudiesResponse,
     UpdateStudiesError,
+    RequestStudyResponse,
+    RequestStudyError
 )
+from app.models.requests.StudyRequests import StudyRequest
 
 router = APIRouter(
     prefix="/studies",
@@ -58,12 +63,12 @@ def get_all_studies():
         500: {"model": UpdateStudiesError},
     },
 )
-def add_specialty(
+def add_study(
     study_name: str,
     uid=Depends(Auth.is_admin),
 ):
     """
-    Add a new specialty.
+    Add a new study.
 
     This will allow authenticated admins to add new studies.
 
@@ -118,6 +123,56 @@ def delete_study(
         Study.delete_study(study_name)
         updated_studies = Study.get_all()
         return {"studies": updated_studies}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+
+@router.post(
+    "/request",
+    status_code=status.HTTP_200_OK,
+    response_model=RequestStudyResponse,
+    responses={
+        400: {"model": RequestStudyError},
+        401: {"model": RequestStudyError},
+        403: {"model": RequestStudyError},
+        500: {"model": RequestStudyError},
+    },
+)
+def request_study(
+    study_request_info: StudyRequest,
+    #uid=Depends(Auth.is_logged_in),
+):
+    """
+    Request a new study.
+
+    This will allow authenticated physicians to request new studies from different laboratories.
+
+    This path operation will:
+
+    * Add the new study.
+    * Throw an error if it fails.
+    """
+    try:
+        physician_id = Appointment.get_physician_from_appointment(study_request_info.appointment_id)
+        patient_id = Appointment.get_patient_from_appointment(study_request_info.appointment_id)
+        final_data = {
+            key:value
+            for key, value in study_request_info.model_dump().items()
+            if key not in ["appointment_id"]
+        }
+        final_data["physician_id"] = physician_id
+        final_data["patient_id"] = patient_id
+        study = MedicalStudy(**final_data)
+        study.create()
+        return {"message": "Successfull request"}
+    except HTTPException as http_exception:
+        return JSONResponse(
+            status_code=http_exception.status_code,
+            content={"detail": http_exception.detail},
+        )
     except:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

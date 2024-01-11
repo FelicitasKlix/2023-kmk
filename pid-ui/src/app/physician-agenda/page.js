@@ -32,6 +32,7 @@ const PhysicianAgenda = () => {
     const [study, setStudy] = useState("");
     const [labs, setLabs] = useState([]);
     const [lab, setLab] = useState("");
+    const [detail, setNewDetailContent] = useState("");
 
     const [reviews, setReviews] = useState({
         puntuality: {
@@ -109,6 +110,25 @@ const PhysicianAgenda = () => {
         } catch (error) {
             toast.error("Error al cerrar el turno");
             console.error(error);
+        }
+
+        try{
+            const response = await axios.post(
+                `${apiURL}studies/request`,
+                {
+                    title: study,
+                    appointment_id: appointmentToClose.id,
+                    laboratory_id: lab,
+                    details: detail
+                },
+                {
+                    httpsAgent: agent,
+                }
+            );
+            toast.success("Estudio solicitado exitosamente");
+        } catch(error){
+            console.error(error);
+            toast.error("Error al solicitar estudio");
         }
 
         try {
@@ -334,7 +354,7 @@ const PhysicianAgenda = () => {
                                 value={study}
                                 required
                                 onChange={(e) => {
-                                    //console.log(e.target.value);
+                                    console.log(e.target.value);
                                     setStudy(e.target.value);
                                 }}
                             >
@@ -359,17 +379,18 @@ const PhysicianAgenda = () => {
                                 value={lab}
                                 required
                                 onChange={(e) => {
-                                    //console.log(e.target.value);
+                                    console.log(e.target.value);
                                     setLab(e.target.value);
                                 }}
                             >
                                 <option value=''>Selecciona un laboratorio</option>
                                 {labs.map((lab) => (
-                                    <option key={lab} value={lab}>
-                                        {lab.email
+                                    <option key={lab.id} value={lab.id}>
+                                        {lab.id}
+                                        {/* {lab.email
                                             .charAt(0)
                                             .toUpperCase() +
-                                            (lab.email).slice(1)}
+                                            (lab.email).slice(1)} */}
                                     </option>
                                 ))}
                             </select>
@@ -380,10 +401,10 @@ const PhysicianAgenda = () => {
 
                             <textarea
                                 id='detalle'
-                                //value={newDetailContent}
+                                value={detail}
                                 onChange={(e) => {
                                     console.log(e.target.value);
-                                    //setNewDetailContent(e.target.value);
+                                    setNewDetailContent(e.target.value);
                                 }}
                                 placeholder='Escribe un detalle del estudio'
                                 required

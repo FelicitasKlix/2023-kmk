@@ -30,6 +30,7 @@ const Registro = () => {
     const [disabledRegisterButton, setDisabledRegisterButton] = useState(false);
     const router = useRouter();
     const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+    const [showPassword, setShowPassword] = useState(false);
 
     // At request level
     const agent = new https.Agent({
@@ -291,8 +292,10 @@ const Registro = () => {
                 )}
                 <div className={styles["form-group"]}>
                     <label htmlFor='password'>Contraseña</label>
+                    <div className={styles["password-input-container"]}>
                     <input
-                        type='password'
+                        //type='password'
+                        type={showPassword ? "text" : "password"}
                         id='password'
                         value={password}
                         onChange={(e) => {
@@ -301,6 +304,14 @@ const Registro = () => {
                         }}
                         required
                     />
+                    <button
+                    type="button"
+                    className={styles["toggle-password-button"]}
+                    onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? "🔒" : "👁"}
+                    </button>
+                    </div>
                 </div>
                 <div className={styles["form-group"]}>
                     <label htmlFor='confirmPassword'>Repetir Contraseña</label>

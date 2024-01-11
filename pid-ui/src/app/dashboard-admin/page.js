@@ -253,9 +253,8 @@ const Admin = () => {
     };
 
     const handleApprovePhysician = async (physician) => {
-        toast.info("Aprobando profesional...");
         try {
-            toast.info("Aprobando medico...");
+            toast.info("Aprobando profesional...");
             console.log(physician.id);
             const response = await axios.post(
                 `${apiURL}admin/approve-physician/${physician.id}`,
