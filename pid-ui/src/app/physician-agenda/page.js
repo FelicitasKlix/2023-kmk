@@ -144,7 +144,7 @@ const PhysicianAgenda = () => {
                     httpsAgent: agent,
                 }
             );
-            toast.info("Turno cerrado exitosamente");
+            toast.success("Turno cerrado exitosamente");
             fetchAppointments();
             setIsAddObervationModalOpen(false);
         } catch (error) {
@@ -168,7 +168,7 @@ const PhysicianAgenda = () => {
                     httpsAgent: agent,
                 }
             );
-            toast.info("Puntaje cargado exitosamente");
+            toast.success("Puntaje cargado exitosamente");
         } catch (error) {
             toast.error("Error al agregar la puntaje");
             console.error(error);

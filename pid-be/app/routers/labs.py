@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from app.models.entities.Auth import Auth
 from app.models.entities.Laboratory import Laboratory
 from app.models.entities.MedicalStudy import MedicalStudy
+from app.models.entities.Patient import Patient
 from app.models.responses.LabsResponses import (
     GetLabsResponse,
     GetLabsError,
@@ -112,8 +113,77 @@ def get_all_pending_studies(
     """
     try:
         pending_studies = MedicalStudy.get_pending_medical_studies_for_laboratory(uid)
-        print(pending_studies)
+        for i in pending_studies:
+            names = Patient.get_first_and_last_name(i["patient_id"])
+            i["patient_full_name"] = names[0]+" "+names[1]
         return {"studies": pending_studies}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+@router.get(
+    "/in-progress-studies",
+    status_code=status.HTTP_200_OK,
+    response_model=GetPendingStudiesResponse,
+    responses={
+        500: {"model": GetPendingStudiesError},
+    },
+)
+def get_all_in_progress_studies(
+    uid=Depends(Auth.is_logged_in)
+    ):
+    """
+    Get a lab pending studies.
+
+    This will allow authenticated labs to retrieve all pending studies.
+
+    This path operation will:
+
+    * Return all the pending studies for the lab in the system.
+    * Throw an error if specialty retrieving fails.
+    """
+    try:
+        in_progress_studies = MedicalStudy.get_started_medical_studies_for_laboratory(uid)
+        for i in in_progress_studies:
+            names = Patient.get_first_and_last_name(i["patient_id"])
+            i["patient_full_name"] = names[0]+" "+names[1]
+        return {"studies": in_progress_studies}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+
+@router.get(
+    "/finished-studies",
+    status_code=status.HTTP_200_OK,
+    response_model=GetPendingStudiesResponse,
+    responses={
+        500: {"model": GetPendingStudiesError},
+    },
+)
+def get_all_finished_studies(
+    uid=Depends(Auth.is_logged_in)
+    ):
+    """
+    Get a lab pending studies.
+
+    This will allow authenticated labs to retrieve all pending studies.
+
+    This path operation will:
+
+    * Return all the pending studies for the lab in the system.
+    * Throw an error if specialty retrieving fails.
+    """
+    try:
+        finished_studies = MedicalStudy.get_finished_medical_studies_for_laboratory(uid)
+        for i in finished_studies:
+            names = Patient.get_first_and_last_name(i["patient_id"])
+            i["patient_full_name"] = names[0]+" "+names[1]
+        return {"studies": finished_studies}
     except:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

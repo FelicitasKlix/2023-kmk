@@ -19,6 +19,8 @@ class TemplateHandler:
             "APPROVED_UPDATED_APPOINTMENT": "ApprovedUpdatedAppointment",
             "CANCELED_APPOINTMENT_DUE_TO_PHYSICIAN_DENIAL": "CanceledAppointmentDueToPhysicianDenial",
             "APPROVED_LABORATORY": "ApprovedLaboratory",
+            "REQUESTED_STUDY": "RequestedStudy",
+            "FINISHED_STUDY": "FinishedStudy",
         }
         self.type = type
         self.template_name = template_for_email_type[self.type]

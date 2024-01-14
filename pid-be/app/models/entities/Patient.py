@@ -33,6 +33,14 @@ class Patient:
     @staticmethod
     def is_patient(id):
         return db.collection("patients").document(id).get().exists
+    
+    @staticmethod
+    def get_first_and_last_name(id):
+        return db.collection("patients").document(id).get().to_dict()["first_name"], db.collection("patients").document(id).get().to_dict()["last_name"]
+    
+    @staticmethod
+    def get_email(id):
+        return db.collection("patients").document(id).get().to_dict()["email"]
 
     @staticmethod
     def has_pending_scores(id):

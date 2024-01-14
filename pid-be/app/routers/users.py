@@ -115,6 +115,18 @@ async def login_user(
                     status_code=status.HTTP_403_FORBIDDEN,
                     content={"detail": "Account has to be approved by admin"},
                 )
+        elif Laboratory.is_laboratory(login_response.json()["localId"]):
+            laboratory = Laboratory.get_by_id(login_response.json()["localId"])
+            if laboratory["approved"] == "denied" or laboratory["approved"] == "blocked":
+                return JSONResponse(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    content={"detail": "Account is not approved"},
+                )
+            elif laboratory["approved"] == "pending":
+                return JSONResponse(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    content={"detail": "Account has to be approved by admin"},
+                )
         return {"token": login_response.json()["idToken"]}
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

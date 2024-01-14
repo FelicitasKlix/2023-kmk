@@ -55,30 +55,30 @@ const DashboardLaboratory = () => {
         },
     };
 
-    const fetchPendingStudies = async () => {
+    const fetchInProgressStudies = async () => {
         try {
             const response = await axios.get(
-                `${apiURL}labs/pending-studies`
+                `${apiURL}labs/in-progress-studies`
             );
             console.log(response.data.studies);
             response.data.studies == undefined
                 ? setStudies([])
                 : setStudies(response.data.studies);
         } catch (error) {
-            toast.error("Error al obtener los estudios pendientes");
+            toast.error("Error al obtener los estudios en proceso");
             console.log(error);
         }
     };
 
-    const handleStartStudy = async (studyId) => {
-        toast.info("Iniciando estudio...");
+    const handleFinishStudy = async (studyId) => {
+        toast.info("Finalizando estudio...");
         console.log(studyId);
         try {
             await axios.post(
-                `${apiURL}studies/start/${studyId}`
+                `${apiURL}studies/finish/${studyId}`
             );
-            toast.success("Estudio iniciado exitosamente");
-            fetchPendingStudies();
+            toast.success("Estudio finalizado exitosamente");
+            fetchInProgressStudies();
         } catch (error) {
             console.log(error);
         }
@@ -88,7 +88,7 @@ const DashboardLaboratory = () => {
         axios.defaults.headers.common = {
             Authorization: `bearer ${localStorage.getItem("token")}`,
         };
-        fetchPendingStudies()
+        fetchInProgressStudies()
             .then(() => setIsLoading(false)) // Marcar como cargado cuando la respuesta llega
             .catch(() => {
                 setIsLoading(false); // Asegúrate de marcar como cargado en caso de error
@@ -98,7 +98,7 @@ const DashboardLaboratory = () => {
 
     return (
         <div className={styles.dashboard}>
-            <LaboratoryTabBar highlight='Pendientes' />
+            <LaboratoryTabBar highlight='Proceso' />
             <Header role='laboratory' />
             
             {isLoading ? (
@@ -108,7 +108,7 @@ const DashboardLaboratory = () => {
                     <div className={styles["tab-content"]}>
                         <div className={styles.form}>
                             <div className={styles["title"]}>
-                                Estudios Pendientes
+                                Estudios En Proceso
                             </div>
                             <Image
                                 src="/refresh_icon.png"
@@ -118,7 +118,7 @@ const DashboardLaboratory = () => {
                                 height={200}
                                 onClick={() => {
                                     toast.info("Actualizando estudios pendientes...");
-                                    fetchPendingStudies();
+                                    fetchInProgressStudies();
                                 }}
                             />
                             <div className={styles["appointments-section"]}>
@@ -171,16 +171,30 @@ const DashboardLaboratory = () => {
                                                     <button
                                                         className={
                                                             styles[
-                                                                "approve-button"
+                                                                "standard-button"
+                                                            ]
+                                                        }
+                                                        // onClick={() =>
+                                                        //     handleFinishStudy(
+                                                        //         study.id
+                                                        //     )
+                                                        // }
+                                                    >
+                                                        Cargar informacion{" "}
+                                                    </button>
+                                                    <button
+                                                        className={
+                                                            styles[
+                                                                "delete-button"
                                                             ]
                                                         }
                                                         onClick={() =>
-                                                            handleStartStudy(
+                                                            handleFinishStudy(
                                                                 study.id
                                                             )
                                                         }
                                                     >
-                                                        Comenzar{" "}
+                                                        Finalizar{" "}
                                                     </button>
 
                                                 </div>

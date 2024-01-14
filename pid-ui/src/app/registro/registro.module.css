@@ -152,3 +152,31 @@
     margin-left: 8px;
     margin-bottom: 25px;
 }
+
+/* .toggle-view-password-button{
+    display: flex;
+    justify-content: center;
+} */
+
+/* En tu archivo de estilos (TuComponente.module.css) */
+
+.toggle-password-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2px; /* Ajusta el margen según sea necesario */
+  }
+  
+  .toggle-view-password-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 16px;
+    outline: none;
+    transition: color 0.3s;
+  }
+  
+  .toggle-password-button:hover {
+    color: #007bff; /* Cambia el color al pasar el ratón por encima */
+  }
+  

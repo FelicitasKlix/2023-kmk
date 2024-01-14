@@ -1,3 +1,4 @@
+import requests
 from fastapi import APIRouter, status, Depends, HTTPException
 from fastapi.responses import JSONResponse
 
@@ -6,13 +7,18 @@ from app.models.entities.Admin import Admin
 from app.models.entities.Study import Study
 from app.models.entities.MedicalStudy import MedicalStudy
 from app.models.entities.Appointment import Appointment
+from app.models.entities.Laboratory import Laboratory
+from app.models.entities.Physician import Physician
+from app.models.entities.Patient import Patient
 from app.models.responses.StudiesResponses import (
     GetStudiesResponse,
     GetStudiesError,
     UpdateStudiesResponse,
     UpdateStudiesError,
     RequestStudyResponse,
-    RequestStudyError
+    RequestStudyError,
+    ChangeStudyStatusResponse,
+    ChangeStudyStatusError,
 )
 from app.models.requests.StudyRequests import StudyRequest
 
@@ -143,7 +149,7 @@ def delete_study(
 )
 def request_study(
     study_request_info: StudyRequest,
-    #uid=Depends(Auth.is_logged_in),
+    uid=Depends(Auth.is_logged_in),
 ):
     """
     Request a new study.
@@ -167,6 +173,110 @@ def request_study(
         final_data["patient_id"] = patient_id
         study = MedicalStudy(**final_data)
         study.create()
+        lab_email = Laboratory.get_laboratory_email(study_request_info.laboratory_id)
+        requests.post(
+            "http://localhost:9000/emails/send",
+            json={
+                "type": "REQUESTED_STUDY",
+                "data": {
+                    "email": lab_email,
+                    "title": study_request_info.title,
+                    "details": study_request_info.details,
+                },
+            },
+        )
+        return {"message": "Successfull request"}
+    except HTTPException as http_exception:
+        return JSONResponse(
+            status_code=http_exception.status_code,
+            content={"detail": http_exception.detail},
+        )
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+@router.post(
+    "/start/{study_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=ChangeStudyStatusResponse,
+    responses={
+        400: {"model": ChangeStudyStatusError},
+        401: {"model": ChangeStudyStatusError},
+        403: {"model": ChangeStudyStatusError},
+        500: {"model": ChangeStudyStatusError},
+    },
+)
+def start_study(
+    study_id: str,
+    uid=Depends(Auth.is_logged_in),
+):
+    """
+    Changes study status to in-progress.
+
+    This will allow authenticated labs to change the status of a study.
+
+    This path operation will:
+
+    * Change the study status to in-progress.
+    * Throw an error if it fails.
+    """
+    try:
+        MedicalStudy.start_medical_study(study_id)
+        return {"message": "Successfull request"}
+    except HTTPException as http_exception:
+        return JSONResponse(
+            status_code=http_exception.status_code,
+            content={"detail": http_exception.detail},
+        )
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+
+@router.post(
+    "/finish/{study_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=ChangeStudyStatusResponse,
+    responses={
+        400: {"model": ChangeStudyStatusError},
+        401: {"model": ChangeStudyStatusError},
+        403: {"model": ChangeStudyStatusError},
+        500: {"model": ChangeStudyStatusError},
+    },
+)
+def finish_study(
+    study_id: str,
+    uid=Depends(Auth.is_logged_in),
+):
+    """
+    Changes study status to finished.
+
+    This will allow authenticated labs to change the status of a study.
+
+    This path operation will:
+
+    * Change the study status to finished.
+    * Throw an error if it fails.
+    """
+    try:
+        MedicalStudy.finish_medical_study(study_id)
+        patient_id = MedicalStudy.get_patient_id_from_study_id(study_id)
+        physician_id = MedicalStudy.get_physician_id_from_study_id(study_id)
+        requests.post(
+            "http://localhost:9000/emails/send",
+            json={
+                "type": "FINISHED_STUDY",
+                "data": {
+                    "email": Physician.get_email(physician_id),
+                    "title": MedicalStudy.get_study_title(study_id),
+                    "details": MedicalStudy.get_study_details(study_id),
+                },
+            },
+        )
         return {"message": "Successfull request"}
     except HTTPException as http_exception:
         return JSONResponse(

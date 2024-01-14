@@ -29,3 +29,9 @@ class GetPendingStudiesResponse(BaseModel):
 
 class GetPendingStudiesError(BaseModel):
     detail: str
+
+class ChangeStudyStatusResponse(BaseModel):
+    message: str
+
+class ChangeStudyStatusError(BaseModel):
+    detail: str

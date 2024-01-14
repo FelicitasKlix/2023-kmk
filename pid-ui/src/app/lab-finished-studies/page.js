@@ -55,40 +55,40 @@ const DashboardLaboratory = () => {
         },
     };
 
-    const fetchPendingStudies = async () => {
+    const fetchFinishedStudies = async () => {
         try {
             const response = await axios.get(
-                `${apiURL}labs/pending-studies`
+                `${apiURL}labs/finished-studies`
             );
             console.log(response.data.studies);
             response.data.studies == undefined
                 ? setStudies([])
                 : setStudies(response.data.studies);
         } catch (error) {
-            toast.error("Error al obtener los estudios pendientes");
+            toast.error("Error al obtener los estudios finalizados");
             console.log(error);
         }
     };
 
-    const handleStartStudy = async (studyId) => {
-        toast.info("Iniciando estudio...");
-        console.log(studyId);
-        try {
-            await axios.post(
-                `${apiURL}studies/start/${studyId}`
-            );
-            toast.success("Estudio iniciado exitosamente");
-            fetchPendingStudies();
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    // const handleFinishStudy = async (studyId) => {
+    //     toast.info("Finalizando estudio...");
+    //     console.log(studyId);
+    //     try {
+    //         await axios.post(
+    //             `${apiURL}studies/finish/${studyId}`
+    //         );
+    //         toast.success("Estudio finalizado exitosamente");
+    //         fetchFinishedStudies();
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
 
     useEffect(() => {
         axios.defaults.headers.common = {
             Authorization: `bearer ${localStorage.getItem("token")}`,
         };
-        fetchPendingStudies()
+        fetchFinishedStudies()
             .then(() => setIsLoading(false)) // Marcar como cargado cuando la respuesta llega
             .catch(() => {
                 setIsLoading(false); // Asegúrate de marcar como cargado en caso de error
@@ -98,7 +98,7 @@ const DashboardLaboratory = () => {
 
     return (
         <div className={styles.dashboard}>
-            <LaboratoryTabBar highlight='Pendientes' />
+            <LaboratoryTabBar highlight='Completados' />
             <Header role='laboratory' />
             
             {isLoading ? (
@@ -108,7 +108,7 @@ const DashboardLaboratory = () => {
                     <div className={styles["tab-content"]}>
                         <div className={styles.form}>
                             <div className={styles["title"]}>
-                                Estudios Pendientes
+                                Estudios Finalizados
                             </div>
                             <Image
                                 src="/refresh_icon.png"
@@ -118,7 +118,7 @@ const DashboardLaboratory = () => {
                                 height={200}
                                 onClick={() => {
                                     toast.info("Actualizando estudios pendientes...");
-                                    fetchPendingStudies();
+                                    fetchFinishedStudies();
                                 }}
                             />
                             <div className={styles["appointments-section"]}>
@@ -171,16 +171,16 @@ const DashboardLaboratory = () => {
                                                     <button
                                                         className={
                                                             styles[
-                                                                "approve-button"
+                                                                "standard-button"
                                                             ]
                                                         }
-                                                        onClick={() =>
-                                                            handleStartStudy(
-                                                                study.id
-                                                            )
-                                                        }
+                                                        // onClick={() =>
+                                                        //     handleFinishStudy(
+                                                        //         study.id
+                                                        //     )
+                                                        // }
                                                     >
-                                                        Comenzar{" "}
+                                                        Visualizar{" "}
                                                     </button>
 
                                                 </div>

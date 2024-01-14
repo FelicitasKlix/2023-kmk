@@ -176,7 +176,7 @@ const LaboratoryTabBar = (props) => {
                 className={`${styles["tab"]} ${
                     props.highlight === "Proceso" ? styles["selected-tab"] : ""
                 }`}
-                onClick={() => router.push("/patient-my-record")}
+                onClick={() => router.push("/lab-in-progress-studies")}
             >
                 Estudios en Proceso
             </div>
@@ -184,7 +184,7 @@ const LaboratoryTabBar = (props) => {
                 className={`${styles["tab"]} ${
                     props.highlight === "Completados" ? styles["selected-tab"] : ""
                 }`}
-                onClick={() => router.push("/patient-my-record")}
+                onClick={() => router.push("/lab-finished-studies")}
             >
                 Estudios Completados
             </div>

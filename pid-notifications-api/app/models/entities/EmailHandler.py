@@ -39,6 +39,8 @@ class EmailHandler:
             "APPROVED_UPDATED_APPOINTMENT": "Tu turno modificado ha sido Aprobado",
             "CANCELED_APPOINTMENT_DUE_TO_PHYSICIAN_DENIAL": "Turno Cancelado",
             "APPROVED_LABORATORY": "Cuenta Laboratorio Aprobado",
+            "REQUESTED_STUDY": "Estudio Solicitado",
+            "FINISHED_STUDY": "Tu estudio esta listo!",
         }
         self.type = type
         self.subject = subject_for_email_type[self.type]

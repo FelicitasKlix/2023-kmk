@@ -135,6 +135,10 @@ class Physician:
     def update_agenda(id, agenda):
         db.collection("physicians").document(id).update({"agenda": agenda})
 
+    @staticmethod
+    def get_email(id):
+        return db.collection("physicians").document(id).get().to_dict()["email"]
+
     def create(self):
         if db.collection("physicians").document(self.id).get().exists:
             raise HTTPException(

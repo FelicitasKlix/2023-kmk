@@ -55,6 +55,10 @@ const Registro = () => {
         }
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+      };
+
     const fetchSpecialties = async () => {
         const response = await axios.get(`${apiURL}specialties`, {
             httpsAgent: agent,
@@ -304,19 +308,19 @@ const Registro = () => {
                         }}
                         required
                     />
-                    <button
+                    {/* <button
                     type="button"
                     className={styles["toggle-password-button"]}
-                    onClick={() => setShowPassword(!showPassword)}
-                    >
-                        {showPassword ? "🔒" : "👁"}
-                    </button>
+                    onClick={togglePasswordVisibility}
+                >
+                    {showPassword ? "🔒" : "👁"}
+                </button> */}
                     </div>
                 </div>
                 <div className={styles["form-group"]}>
                     <label htmlFor='confirmPassword'>Repetir Contraseña</label>
                     <input
-                        type='password'
+                        type={showPassword ? "text" : "password"}
                         id='confirmPassword'
                         value={confirmPassword}
                         onChange={(e) => {
@@ -326,6 +330,15 @@ const Registro = () => {
                         required
                     />
                 </div>
+                <div className={styles["toggle-password-button-container"]}>
+                <button
+                type="button"
+                className={styles["toggle-view-password-button"]}
+                onClick={togglePasswordVisibility}
+                >
+                {showPassword ? "🔒 Ocultar Contraseña" : "👁 Mostrar Contraseña"}
+                </button>
+            </div>
                 {error && (
                     <div className={styles["error-message"]}>{error}</div>
                 )}

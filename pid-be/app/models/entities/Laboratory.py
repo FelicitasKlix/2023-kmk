@@ -54,6 +54,10 @@ class Laboratory:
             db.collection("laboratories").where("approved", "==", "pending").get()
         )
         return [lab.to_dict() for lab in pending_labs]
+    
+    @staticmethod
+    def get_laboratory_email(id):
+        return db.collection("laboratories").document(id).get().to_dict()["email"]
 
     def create(self):
         if db.collection("laboratories").document(self.id).get().exists:

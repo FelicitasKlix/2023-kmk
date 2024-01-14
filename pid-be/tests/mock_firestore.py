@@ -29,17 +29,17 @@ if __name__ == "__main__":
     ]
 
     lab_studies = [
-        "sangre",
-        "orina",
-        "radiografía",
-        "ecografía",
-        "tomografia",
-        "resonancia",
-        "ultrasonido",
-        "electrocardiograma",
-        "papanicolaou",
-        "mamografiía",
-        "hisopado"
+        "Sangre",
+        "Orina",
+        "Radiografía",
+        "Ecografía",
+        "Tomografia",
+        "Resonancia",
+        "Ultrasonido",
+        "Electrocardiograma",
+        "Papanicolaou",
+        "Mamografiía",
+        "Hisopado"
     ]
 
     blood_types = [

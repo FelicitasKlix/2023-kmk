@@ -89,6 +89,22 @@ class MedicalStudy:
     def get_finished_medical_studies_for_laboratory(laboratory_id):
         studies = db.collection("medicalStudies").where("laboratory_id", "==", laboratory_id).where("status", "==", "finished").get()
         return [study.to_dict() for study in studies]
+    
+    @staticmethod
+    def get_patient_id_from_study_id(study_id):
+        return db.collection("medicalStudies").document(study_id).get().to_dict()["patient_id"]
+    
+    @staticmethod
+    def get_physician_id_from_study_id(study_id):
+        return db.collection("medicalStudies").document(study_id).get().to_dict()["physician_id"]
+    
+    @staticmethod
+    def get_study_title(study_id):
+        return db.collection("medicalStudies").document(study_id).get().to_dict()["title"]
+    
+    @staticmethod
+    def get_study_details(study_id):
+        return db.collection("medicalStudies").document(study_id).get().to_dict()["details"]
 
     def create(self):
         if db.collection("medicalStudies").document(self.id).get().exists:
