@@ -98,7 +98,7 @@ const DashboardPatient = () => {
                     httpsAgent: agent,
                 }
             );
-            toast.info("Puntaje cargado exitosamente");
+            toast.success("Puntaje cargado exitosamente");
             await delay(5000);
             fetchPendingReviews();
         } catch (error) {

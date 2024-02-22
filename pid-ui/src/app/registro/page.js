@@ -336,7 +336,11 @@ const Registro = () => {
                 className={styles["toggle-view-password-button"]}
                 onClick={togglePasswordVisibility}
                 >
-                {showPassword ? "🔒 Ocultar Contraseña" : "👁 Mostrar Contraseña"}
+                <img
+                    src={showPassword ? "/eye_closed.png" : "/eye_open.png"}
+                    alt={showPassword ? 'Locked' : 'Eye'}
+                    style={{ width: '40px', height: '40px' }}
+                />
                 </button>
             </div>
                 {error && (

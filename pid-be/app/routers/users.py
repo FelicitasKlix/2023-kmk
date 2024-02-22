@@ -428,7 +428,7 @@ def add_score(add_score_request: LoadScoreRequest, uid=Depends(Auth.is_logged_in
 )
 def show_score(
     user_id: str,
-    # uid=Depends(Auth.is_logged_in)
+    uid=Depends(Auth.is_logged_in)
 ):
     """
     Show scores from a physician.
@@ -442,9 +442,10 @@ def show_score(
     """
     try:
         if Patient.is_patient(user_id):
-            appointments = Appointment.get_all_closed_appointments_for_patient_with(
+            appointments = Appointment.get_all_rated_appointments_for_patient_with(
                 user_id
             )
+            print(appointments)
             score_sums = {
                 "puntuality": 0,
                 "communication": 0,

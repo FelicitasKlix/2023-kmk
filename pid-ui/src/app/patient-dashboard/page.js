@@ -18,6 +18,8 @@ import "react-toastify/dist/ReactToastify.css";
 import InfoIcon from "@mui/icons-material/Info";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import missingRatingStyles from '../styles/ConfirmationModal.module.css';
+
 
 registerLocale("es", es);
 
@@ -43,6 +45,7 @@ const DashboardPatient = () => {
 
     const [physicianScores, setPhysicianScores] = useState([]);
     const [appointmentScores, setAppointmentScores] = useState([]);
+    const [showRatingModal, setShowRatingModal] = useState(false);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -58,8 +61,12 @@ const DashboardPatient = () => {
             );
             console.log(response.data);
             if (response.data.pending_scores.length > 0) {
-                router.push("/patient-dashboard/pending-reviews");
-            }
+                toast.info("Tiene reseñas pendientes por calificar");
+                setShowRatingModal(true);
+              }
+            // if (response.data.pending_scores.length > 0) {
+            //     router.push("/patient-dashboard/pending-reviews");
+            // }
         } catch (error) {
             toast.error("Error al obtener las reseñas pendientes");
             console.error(error);
@@ -258,6 +265,10 @@ const DashboardPatient = () => {
         setAppointmentScores([]);
         setIsRatingModalOpen(false);
     };
+
+    const handleRatingClick = () => {
+        window.location.href = "/patient-dashboard/pending-reviews";
+      };
 
     const saveAgenda = (doctorId) => {
         if (doctorId) {
@@ -528,6 +539,22 @@ const DashboardPatient = () => {
                 </Modal>
             )}
 
+            {/* Modal de missing ratings */}
+            {showRatingModal && (
+                <Modal
+                    ariaHideApp={false}
+                    isOpen={showRatingModal}
+                    //onRequestClose={handleCloseRatingModal}
+                    style={ratingModalStyles}
+                    contentLabel='Example Modal'
+                >
+                <div className="modal">
+                <p>No puede solicitar el turno ya que tiene reseñas pendientes</p>
+                <button onClick={handleRatingClick} className={styles["confirm-button"]}>Puntuar</button>
+                </div>
+                </Modal>
+            )}
+
             <TabBar highlight='Turnos' />
 
             <Header role='patient' />
@@ -769,7 +796,7 @@ const DashboardPatient = () => {
                                                                 ]
                                                             }
                                                         >
-                                                            {review.rating}
+                                                            {review.rating.toFixed(0)}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -859,6 +886,9 @@ const DashboardPatient = () => {
                                         ? styles["disabled-button"]
                                         : ""
                                 }`}
+                                onClick={() =>
+                                    checkPendingReviews()
+                                }
                                 disabled={
                                     !selectedDoctor || disabledAppointmentButton
                                 }
@@ -866,7 +896,9 @@ const DashboardPatient = () => {
                                 Solicitar turno
                             </button>
                         </form>
+                        //aca iria el modal
                     </div>
+                    
                     <Footer />
                 </>
             )}

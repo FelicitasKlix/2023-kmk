@@ -115,7 +115,11 @@ const Landing = () => {
                     className={styles["toggle-password-button"]}
                     onClick={() => setShowPassword(!showPassword)}
                     >
-                        {showPassword ? "🔒" : "👁"}
+                        <img
+                            src={showPassword ? "/eye_closed.png" : "/eye_open.png"}
+                            alt={showPassword ? 'Locked' : 'Eye'}
+                            style={{ width: '40px', height: '40px' }}
+                        />
                     </button>
                     </div>
                 </div>
