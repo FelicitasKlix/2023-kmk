@@ -17,6 +17,7 @@ class MedicalStudy:
     status: str
     file: str = None
     id: str = None
+    lab_details: str = None
 
     def __init__(
         self,
@@ -30,6 +31,7 @@ class MedicalStudy:
         status: str = "pending",
         file: str = None,
         id: str = None,
+        lab_details: str = None,
     ):
         self.title = title
         self.physician_id = physician_id
@@ -41,6 +43,7 @@ class MedicalStudy:
         self.status = status
         self.file = file
         self.id = id
+        self.lab_details = lab_details
 
     @staticmethod
     def get_by_id(id):
@@ -58,7 +61,8 @@ class MedicalStudy:
 
     @staticmethod
     def finish_medical_study(id):
-        db.collection("medicalStudies").document(id).update({"status": "finished"})
+        completion_date = int(datetime.now().timestamp())  # Obtener la fecha actual en formato timestamp
+        db.collection("medicalStudies").document(id).update({"status": "finished", "completion_date": completion_date})
 
     @staticmethod
     def get_pending_medical_studies():
@@ -105,6 +109,23 @@ class MedicalStudy:
     @staticmethod
     def get_study_details(study_id):
         return db.collection("medicalStudies").document(study_id).get().to_dict()["details"]
+    
+    @staticmethod
+    def update_lab_details(study_id, lab_details):
+        db.collection("medicalStudies").document(study_id).update({"lab_details": lab_details})
+
+    @staticmethod
+    def update_file(study_id, file):
+        db.collection("medicalStudies").document(study_id).update({"file": file})
+
+    @staticmethod
+    def update_study_details(study_id, details, file=None):
+        update_data = {"lab_details": details}
+        if file is not None:
+            update_data["file"] = file
+        
+        db.collection("medicalStudies").document(study_id).update(update_data)
+
 
     def create(self):
         if db.collection("medicalStudies").document(self.id).get().exists:
@@ -125,6 +146,7 @@ class MedicalStudy:
                 "completion_date": self.completion_date,
                 "status": "pending",
                 "file": self.file,
+                "lab_details": self.lab_details,
             }
         )
         return self.id

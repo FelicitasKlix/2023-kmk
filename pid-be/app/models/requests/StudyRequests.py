@@ -13,3 +13,9 @@ class StudyRequest(BaseModel):
     completion_date: int = None
     status: str = None
     file: str = None
+    lab_details: str = None
+
+
+class UpdateStudyRequest(BaseModel):
+    file: str = None
+    lab_details: str = None

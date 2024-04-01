@@ -41,6 +41,28 @@ async def upload_analysis(analysis: list[UploadFile], uid=Depends(Auth.is_logged
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"detail": "Internal server error"},
         )
+    
+# @router.post(
+#     "/{patient_id}",
+#     status_code=status.HTTP_201_CREATED,
+#     response_model=list[Union[SuccessfullAnalysisResponse, None]],
+#     responses={
+#         401: {"model": AnalysisErrorResponse},
+#         500: {"model": AnalysisErrorResponse},
+#     },
+# )
+# async def upload_analysis(patient_id: str, analysis: list[UploadFile], uid=Depends(Auth.is_logged_in)):
+#     analysis = Analysis(analysis=analysis, uid=uid, patient_id=patient_id)
+#     try:
+#         saved_analysis = await analysis.save()
+#         return saved_analysis
+#     except HTTPException as http_exception:
+#         return http_exception
+#     except:
+#         return JSONResponse(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             content={"detail": "Internal server error"},
+#         )
 
 
 @router.get(

@@ -20,7 +20,7 @@ from app.models.responses.StudiesResponses import (
     ChangeStudyStatusResponse,
     ChangeStudyStatusError,
 )
-from app.models.requests.StudyRequests import StudyRequest
+from app.models.requests.StudyRequests import (StudyRequest, UpdateStudyRequest)
 
 router = APIRouter(
     prefix="/studies",
@@ -265,8 +265,59 @@ def finish_study(
     try:
         MedicalStudy.finish_medical_study(study_id)
         patient_id = MedicalStudy.get_patient_id_from_study_id(study_id)
-        physician_id = MedicalStudy.get_physician_id_from_study_id(study_id)
+        #physician_id = MedicalStudy.get_physician_id_from_study_id(study_id)
         requests.post(
+            "http://localhost:9000/emails/send",
+            json={
+                "type": "FINISHED_STUDY",
+                "data": {
+                    "email": Patient.get_email(patient_id),
+                    "title": MedicalStudy.get_study_title(study_id),
+                    "details": MedicalStudy.get_study_details(study_id),
+                },
+            },
+        )
+        return {"message": "Successfull request"}
+    except HTTPException as http_exception:
+        return JSONResponse(
+            status_code=http_exception.status_code,
+            content={"detail": http_exception.detail},
+        )
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+@router.post(
+    "/update/{study_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=ChangeStudyStatusResponse,
+    responses={
+        400: {"model": ChangeStudyStatusError},
+        401: {"model": ChangeStudyStatusError},
+        403: {"model": ChangeStudyStatusError},
+        500: {"model": ChangeStudyStatusError},
+    },
+)
+def finish_study(
+    study_id: str,
+    study_request_info: UpdateStudyRequest,
+    uid=Depends(Auth.is_logged_in),
+):
+    """
+    Uploads new information to a study.
+
+    This will allow authenticated labs to add new information to a study.
+
+    This path operation will:
+
+    * Update some fields of the study .
+    * Throw an error if it fails.
+    """
+    try:
+        MedicalStudy.update_study_details(study_id, study_request_info.lab_details, study_request_info.file)
+        '''requests.post(
             "http://localhost:9000/emails/send",
             json={
                 "type": "FINISHED_STUDY",
@@ -276,7 +327,7 @@ def finish_study(
                     "details": MedicalStudy.get_study_details(study_id),
                 },
             },
-        )
+        )'''
         return {"message": "Successfull request"}
     except HTTPException as http_exception:
         return JSONResponse(

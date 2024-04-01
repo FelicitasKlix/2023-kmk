@@ -338,6 +338,7 @@ const PhysicianAgenda = () => {
                             />
                         </div>
                         </div>
+                        
                         <div
                         className={styles["studies-request-section"]}
                         //onSubmit={handleStudiesRequest}
@@ -386,11 +387,7 @@ const PhysicianAgenda = () => {
                                 <option value=''>Selecciona un laboratorio</option>
                                 {labs.map((lab) => (
                                     <option key={lab.id} value={lab.id}>
-                                        {lab.id}
-                                        {/* {lab.email
-                                            .charAt(0)
-                                            .toUpperCase() +
-                                            (lab.email).slice(1)} */}
+                                        {lab.email}
                                     </option>
                                 ))}
                             </select>

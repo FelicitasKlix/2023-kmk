@@ -145,7 +145,7 @@ const DashboardLaboratory = () => {
                                                         (study.title).slice(1)}
                                                 </div>
                                                 <p>
-                                                    Fecha y hora:{" "}
+                                                    Fecha de solicitud:{" "}
                                                     {new Date(
                                                         study.request_date * 1000
                                                     ).toLocaleString("es-AR")}
@@ -160,6 +160,12 @@ const DashboardLaboratory = () => {
                                                 <p>
                                                     Paciente:{" "}
                                                     {study.patient_full_name}
+                                                </p>
+                                                <p>
+                                                    Fecha de finalización:{" "}
+                                                    {new Date(
+                                                        study.completion_date * 1000
+                                                    ).toLocaleString("es-AR")}
                                                 </p>
                                                 <div
                                                     className={

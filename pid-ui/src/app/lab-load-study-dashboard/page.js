@@ -4,14 +4,16 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "../styles/styles.module.css";
 import axios from "axios";
 import https from "https";
-import { Footer, Header, TabBar } from "../components/header";
+import { Footer, Header, LaboratoryTabBar } from "../components/header";
 import ConfirmationModal from "../components/ConfirmationModal";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import { useRouter } from 'next/router';
 import "react-toastify/dist/ReactToastify.css";
 
-const MyRecord = () => {
-    const [isLoading, setIsLoading] = useState(true);
+const LoadStudy = () => {
+    
+    const [isLoading, setIsLoading] = useState(false);
     const apiURL = process.env.NEXT_PUBLIC_API_URL;
     const [file, setFile] = useState([]); // File to be uploaded
     const [analysis, setAnalysis] = useState([]);
@@ -27,61 +29,68 @@ const MyRecord = () => {
     const inputRef = useRef(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState('');
+    //const studyId = props.studyId;
+    // Obtén el objeto router
+    //const router = useRouter();
+
+    // Accede al valor de studyId desde el objeto query
+    //const { studyId } = router.query;
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
     });
 
-    const fetchData = async () => {
-        try {
-            const response = await axios.get(`${apiURL}records/get-my-record`, {
-                httpsAgent: agent,
-            });
-            console.log(response);
-            setRecord(response.data.record);
-            console.log(response);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    // const fetchData = async () => {
+    //     toast.info("Cargando información");
+    //     // try {
+    //     //     const response = await axios.get(`${apiURL}records/get-my-record`, {
+    //     //         httpsAgent: agent,
+    //     //     });
+    //     //     console.log(response);
+    //     //     setRecord(response.data.record);
+    //     //     console.log(response);
+    //     // } catch (error) {
+    //     //     console.error(error);
+    //     // }
+    // };
 
-    const fetchMyAnalysis = async () => {
-        try {
-            const response = await axios.get(`${apiURL}analysis`);
-            setAnalysis(response.data);
-            console.log(response);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    // const fetchMyAnalysis = async () => {
 
-    const handleDownload = (url) => {
-        const link = document.createElement("a");
-        link.download = url;
+    //     // try {
+    //     //     const response = await axios.get(`${apiURL}analysis`);
+    //     //     setAnalysis(response.data);
+    //     //     console.log(response);
+    //     // } catch (error) {
+    //     //     console.error(error);
+    //     // }
+    // };
 
-        link.href = url;
+    // const handleDownload = (url) => {
+    //     const link = document.createElement("a");
+    //     link.download = url;
 
-        link.click();
-    };
+    //     link.href = url;
 
-    const handleDeleteClick = (file) => {
-        console.log(file);
-        setSelectedFile(file);
-        setShowModal(true);
-    };
+    //     link.click();
+    // };
 
-    const handleDeleteFile = async () => {
-        setShowModal(false);
-        try {
-            const response = await axios.delete(`${apiURL}analysis/${selectedFile}`);
-            console.log(response);
-            toast.success("Analisis eliminado con exito");
-            fetchMyAnalysis();
-        } catch (error) {
-            console.error(error);
-            toast.error("Error al eliminar analisis");
-        }
-    };
+    // const handleDeleteClick = (file) => {
+    //     setSelectedFile(file);
+    //     setShowModal(true);
+    // };
+
+    // const handleDeleteFile = async () => {
+    //     setShowModal(false);
+    //     try {
+    //         const response = await axios.delete(`${apiURL}analysis/${selectedFile}`);
+    //         console.log(response);
+    //         toast.success("Analisis eliminado con exito");
+    //         fetchMyAnalysis();
+    //     } catch (error) {
+    //         console.error(error);
+    //         toast.error("Error al eliminar analisis");
+    //     }
+    // };
     
     // const handleFileDelete = async (id) => {
     //     try {
@@ -95,42 +104,42 @@ const MyRecord = () => {
     //     }
     // };
 
-    const resetFileInput = () => {
-        inputRef.current.value = null;
-        setFile([]);
-    };
+    // const resetFileInput = () => {
+    //     inputRef.current.value = null;
+    //     setFile([]);
+    // };
 
-    const onSubmit = async (e) => {
-        toast.info("Subiendo analisis");
-        const formData = new FormData();
-        Array.from(e).forEach((file_to_upload) =>
-            formData.append("analysis", file_to_upload)
-        );
-        try {
-            const response = await axios.post(`${apiURL}analysis`, formData);
-            console.log(response);
-            toast.success("Analisis subido con exito");
-            fetchMyAnalysis();
-            resetFileInput();
-        } catch (error) {
-            console.error(error);
-            toast.error("Error al subir analisis");
-        }
-    };
+    // const onSubmit = async (e) => {
+    //     toast.info("Subiendo analisis");
+    //     const formData = new FormData();
+    //     Array.from(e).forEach((file_to_upload) =>
+    //         formData.append("analysis", file_to_upload)
+    //     );
+    //     try {
+    //         const response = await axios.post(`${apiURL}analysis`, formData);
+    //         console.log(response);
+    //         toast.success("Analisis subido con exito");
+    //         //fetchMyAnalysis();
+    //         resetFileInput();
+    //     } catch (error) {
+    //         console.error(error);
+    //         toast.error("Error al subir analisis");
+    //     }
+    // };
 
     useEffect(() => {
         axios.defaults.headers.common = {
             Authorization: `bearer ${localStorage.getItem("token")}`,
         };
-        fetchData();
-        fetchMyAnalysis().then(() => setIsLoading(false));
+        toast.info("Cargando información ----> ");
+        // fetchData();
+        // fetchMyAnalysis().then(() => setIsLoading(false));
     }, []);
 
     return (
         <div className={styles.dashboard}>
-            <TabBar highlight="Ficha" />
-
-            <Header role="patient" />
+            <LaboratoryTabBar highlight='Proceso' />
+            <Header role="laboratory" />
 
             {isLoading ? (
                 <p>Cargando...</p>
@@ -149,8 +158,8 @@ const MyRecord = () => {
                                 height={200}
                                 onClick={() => {
                                     toast.info("Actualizando...");
-                                    fetchData();
-                                    fetchMyAnalysis();
+                                    // fetchData();
+                                    // fetchMyAnalysis();
                                 }}
                             />
                             <div className={styles["subtitle"]}>
@@ -276,7 +285,7 @@ const MyRecord = () => {
                                 <ConfirmationModal
                                     isOpen={showModal}
                                     closeModal={() => setShowModal(false)}
-                                    confirmAction={handleDeleteFile}
+                                    //confirmAction={handleDeleteFile}
                                     message="¿Estás seguro de que deseas eliminar este archivo?"
                                 />
 
@@ -296,8 +305,8 @@ const MyRecord = () => {
                                         accept=".pdf"
                                         multiple={true}
                                         onChange={(e) => {
-                                            onSubmit(e.target.files);
-                                            setFile(e.target.files);
+                                            //onSubmit(e.target.files);
+                                            //setFile(e.target.files);
                                         }}
                                         onClick={(event) => {
                                             event.target.value = null;
@@ -370,4 +379,4 @@ const MyRecord = () => {
         </div>
     );
 };
-export default MyRecord;
+export default LoadStudy;

@@ -153,13 +153,11 @@
 .review-card-title {
     font-size: 1.2rem;
     font-weight: bold;
-    margin-left: 5%;
 }
 
 .review-card-content {
     font-size: 1rem;
     position: flex-end;
-    margin-right: 15%;
 }
 .schedule-day-modify {
     padding: 1rem;

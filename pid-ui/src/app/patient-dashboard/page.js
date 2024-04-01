@@ -796,7 +796,7 @@ const DashboardPatient = () => {
                                                                 ]
                                                             }
                                                         >
-                                                            {review.rating.toFixed(0)}
+                                                            {typeof review.rating === 'number' ? review.rating.toFixed(1) : review.rating}
                                                         </div>
                                                     </div>
                                                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import styles from "../styles/styles.module.css";
@@ -18,6 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import InfoIcon from "@mui/icons-material/Info";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import { Today } from "@mui/icons-material";
 
 registerLocale("es", es);
 
@@ -26,6 +27,11 @@ const DashboardLaboratory = () => {
     const apiURL = process.env.NEXT_PUBLIC_API_URL;
     const [studies, setStudies] = useState([]);
     const router = useRouter();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [details, setDetails] = useState("");
+    const inputRef = useRef(null);
+    const [file, setFile] = useState([]); // File to be uploaded
+    const [currentStudyId, setCurrentStudyId] = useState(null);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -51,7 +57,7 @@ const DashboardLaboratory = () => {
             bottom: "auto",
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
-            width: "auto",
+            width: "80%",
         },
     };
 
@@ -84,6 +90,102 @@ const DashboardLaboratory = () => {
         }
     };
 
+    const onSubmit = async (e) => {
+        toast.info("Subiendo analisis");
+        const formData = new FormData();
+        Array.from(e).forEach((file_to_upload) =>
+            formData.append("analysis", file_to_upload)
+        );
+        console.log(formData);
+        const patient_id= "IhvmEqW05ggKhhxCTMbq0T3X9KuF";
+        try {
+            const response = await axios.post(`${apiURL}analysis/${patient_id}`, formData);
+            console.log(response);
+            toast.success("Analisis subido con exito");
+            //fetchMyAnalysis();
+            resetFileInput();
+        } catch (error) {
+            console.error(error);
+            toast.error("Error al subir analisis");
+        }
+    };
+
+    const resetFileInput = () => {
+        inputRef.current.value = null;
+        setFile([]);
+    };
+
+    /*const handleLoadStudyInfo = async (studyId) => {
+        toast.info("HOLAHOLAHOLA..."+studyId);
+        console.log(studyId);
+        //router.push("/lab-load-study-dashboard");
+        //const url = `/lab-load-study-dashboard?studyId=${encodeURIComponent(studyId)}`;
+        //router.push(url);
+        try {
+            // await axios.post(
+            //     `${apiURL}studies/finish/${studyId}`
+            // );
+            // toast.success("Estudio finalizado exitosamente");
+            // fetchInProgressStudies();
+        } catch (error) {
+            console.log(error);
+        }
+    };*/
+
+    // const handleLoadStudyInfo = async (studyId) => {
+    //     toast.info("HOLAHOLAHOLA...");
+    //     console.log(studyId);
+    
+    //     // Construir la URL con el studyId como parámetro
+    //     const url = `/lab-load-study-dashboard?studyId=${encodeURIComponent(studyId)}`;
+    
+    //     // Redirigir a la nueva URL
+    //     router.push(url);
+    
+    //     try {
+    //         // ... Resto del código ...
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
+
+    const openModal = (studyId) => {
+        setCurrentStudyId(studyId);
+        setIsModalOpen(true);
+    };
+    
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+    
+    const handleConfirm = async (details, studyId) => {
+        //console.log("Valor de details:", details);
+        //console.log("Id del estudio: ", studyId);
+        let userData = {
+            file: studyId,
+            lab_details: details,
+        };
+        // Aquí puedes realizar cualquier lógica adicional con el valor de details
+        // ...
+        try{
+            const response = await axios.post(
+                `${apiURL}studies/update/${studyId}`,
+                userData,
+                { httpsAgent: agent }
+            );
+            console.log(response.data);
+            if (response.data.message === "Successfull request"){
+                toast.success("Estudio cargado exitosamente");
+            }
+        }catch(error){
+            toast.error("Ha ocurrido un error");
+        }
+        
+        // Cierra el modal u realiza otras acciones necesarias
+        closeModal();
+    };
+    
+
     useEffect(() => {
         axios.defaults.headers.common = {
             Authorization: `bearer ${localStorage.getItem("token")}`,
@@ -98,6 +200,63 @@ const DashboardLaboratory = () => {
 
     return (
         <div className={styles.dashboard}>
+
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                style={ratingModalStyles} // Puedes definir tus estilos personalizados aquí
+                ariaHideApp={false}
+            >
+                <div className={styles["title"]}>Gestion del Estudio - {currentStudyId}</div>
+                <div className={styles["appointment"]}>
+                <div className={styles["my-estudios-section"]}>
+                <div className={styles["subtitle"]}>Cargar estudios</div>
+                    <form className={styles["file-upload-form"]}>
+                        <label
+                            htmlFor="files"
+                            className={styles["upload-button"]}
+                            style={{ color: "#fff" }}
+                        >
+                            Cargar archivos
+                        </label>
+                        <input
+                            id="files"
+                            type="file"
+                            name="file"
+                            accept=".pdf"
+                            multiple={true}
+                            onChange={(e) => {
+                                onSubmit(e.target.files);
+                                setFile(e.target.files);
+                            }}
+                            onClick={(event) => {
+                                event.target.value = null;
+                            }}
+                            ref={inputRef}
+                            style={{ display: "none" }}
+                        />
+                    </form>
+                </div>
+                <div className={styles["subtitle"]}>
+                                Detalles
+                            </div>
+                            <textarea
+                                id='details'
+                                value={details}
+                                onChange={(e) => {
+                                    console.log(e.target.value);
+                                    setDetails(e.target.value);
+                                }}
+                                placeholder='Escriba aqui...'
+                                required
+                                className={styles["observation-input"]}
+                                wrap='soft'
+                            />
+                </div>
+                <button onClick={closeModal} className={styles["delete-button"]}>Cerrar</button>
+                <button onClick={() => handleConfirm(details, currentStudyId)} className={styles["edit-button"]}>Confirmar</button>
+            </Modal>
+
             <LaboratoryTabBar highlight='Proceso' />
             <Header role='laboratory' />
             
@@ -174,11 +333,14 @@ const DashboardLaboratory = () => {
                                                                 "standard-button"
                                                             ]
                                                         }
-                                                        // onClick={() =>
-                                                        //     handleFinishStudy(
-                                                        //         study.id
-                                                        //     )
-                                                        // }
+                                                        onClick={() =>{
+                                                            openModal(study.id);
+                                                            /*handleLoadStudyInfo(
+                                                                study.id
+                                                            )*/
+                                                        }
+                                                            
+                                                        }
                                                     >
                                                         Cargar informacion{" "}
                                                     </button>
