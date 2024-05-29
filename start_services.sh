@@ -2,7 +2,7 @@
 
 # Start the notifications API service
 cd pid-notifications-api
-poetry run start
+poetry run start &
 NOTIFICATIONS_API_PID=$!
 
 # Wait for the notifications API to be ready
