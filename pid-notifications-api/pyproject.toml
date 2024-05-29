@@ -7,7 +7,7 @@ authors = ["tommudano <38632202+tommudano@users.noreply.github.com>"]
 packages = [{ include = "app" }, { include = "tests" }]
 
 [tool.poetry.scripts]
-start = "uvicorn app.main:app --host 0.0.0.0 --port 9000"
+start = "app.main:start"
 
 [tool.poetry.dependencies]
 python = "^3.10"
