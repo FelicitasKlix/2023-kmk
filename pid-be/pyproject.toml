@@ -7,7 +7,7 @@ authors = ["tommudano <mudano.tomas@gmail.com>", "FelicitasKlix <felikpc@gmail.c
 packages = [{ include = "app" }, { include = "tests" }, { include = "credentials" }]
 
 [tool.poetry.scripts]
-start = "app.main:start"
+start = "app.main:start --port 8080"
 
 [tool.poetry.dependencies]
 python = "^3.10"

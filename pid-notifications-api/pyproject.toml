@@ -7,7 +7,7 @@ authors = ["tommudano <38632202+tommudano@users.noreply.github.com>"]
 packages = [{ include = "app" }, { include = "tests" }]
 
 [tool.poetry.scripts]
-start = "app.main:start"
+start = "app.main:start --port 9000"
 
 [tool.poetry.dependencies]
 python = "^3.10"
