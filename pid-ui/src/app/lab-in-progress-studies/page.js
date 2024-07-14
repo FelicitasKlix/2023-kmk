@@ -32,6 +32,9 @@ const DashboardLaboratory = () => {
     const inputRef = useRef(null);
     const [file, setFile] = useState([]); // File to be uploaded
     const [currentStudyId, setCurrentStudyId] = useState(null);
+    const[currentPatientId, setCurrentPatientId] = useState(null);
+    const [analysis, setAnalysis] = useState([]);
+    const [currentAnalysis, setCurrentAnalysis] = useState([]);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -89,26 +92,93 @@ const DashboardLaboratory = () => {
             console.log(error);
         }
     };
-
     const onSubmit = async (e) => {
-        toast.info("Subiendo analisis");
+        toast.info("Subiendo análisis");
+        console.log("---->"+currentPatientId);
+        console.log(e);
         const formData = new FormData();
         Array.from(e).forEach((file_to_upload) =>
             formData.append("analysis", file_to_upload)
         );
+        
+        formData.append("patient_id", currentPatientId); // Asegúrate de obtener el patient_id del formulario
         console.log(formData);
-        const patient_id= "IhvmEqW05ggKhhxCTMbq0T3X9KuF";
         try {
-            const response = await axios.post(`${apiURL}analysis/${patient_id}`, formData);
-            console.log(response);
-            toast.success("Analisis subido con exito");
-            //fetchMyAnalysis();
+            //const response = await axios.post(`${apiURL}analysis/lab-upload`, formData);
+            const response = await axios.post(`${apiURL}analysis/lab-upload`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            
+            //const analysisIds = response.data.map((analysis) => analysis.id);
+            //console.log(analysisIds);
+            
+            toast.success("Análisis subido con éxito");
+            const newAnalysisIds = response.data.map((analysis) => analysis.id);
+            
+            //setCurrentAnalysis([...currentAnalysis, ...newAnalysisIds]);
+            //console.log(currentAnalysis);
+            setCurrentAnalysis((prevAnalysis) => {
+                const updatedAnalysis = [...prevAnalysis, ...newAnalysisIds];
+                //fetchAnalysis(updatedAnalysis);
+                console.log(updatedAnalysis);
+                //fetchAnalysis(updatedAnalysis);
+                return updatedAnalysis;
+            });
+            
+            fetchAnalysis();
+            //fetchFilteredAnalysis(currentPatientId, analysisIds);
+            //setCurrentAnalysis(analysisIds);
             resetFileInput();
         } catch (error) {
             console.error(error);
-            toast.error("Error al subir analisis");
+            toast.error("Error al subir análisis");
         }
     };
+
+    // const fetchAnalysis = async (updatedAnalysis) => {
+    //     try {
+    //         const response = await axios.get(`${apiURL}analysis/laboratory`, {
+    //             patient_id: currentPatientId,
+    //             analysis_ids: updatedAnalysis
+    //         });
+    //         setAnalysis(response.data); // Assuming you have a state 'analysis' to store the fetched data
+    //         console.log(response);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
+    
+    const fetchAnalysis = async () => {
+        try {
+            const response = await axios.get(`${apiURL}analysis/${currentPatientId}`);
+            setAnalysis(response.data); // Asumiendo que tienes un estado analysis para guardar los datos
+            console.log(response);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // const onSubmit = async (e) => {
+    //     toast.info("Subiendo analisis");
+    //     const formData = new FormData();
+    //     Array.from(e).forEach((file_to_upload) =>
+    //         formData.append("analysis", file_to_upload)
+    //     );
+    //     console.log(formData);
+    //     const patient_id= "IhvmEqW05ggKhhxCTMbq0T3X9KuF";
+    //     try {
+    //         const response = await axios.post(`${apiURL}analysis/${patient_id}`, formData);
+    //         console.log(response);
+    //         toast.success("Analisis subido con exito");
+    //         //fetchMyAnalysis();
+    //         resetFileInput();
+    //     } catch (error) {
+    //         console.error(error);
+    //         toast.error("Error al subir analisis");
+    //     }
+    // };
 
     const resetFileInput = () => {
         inputRef.current.value = null;
@@ -149,8 +219,9 @@ const DashboardLaboratory = () => {
     //     }
     // };
 
-    const openModal = (studyId) => {
-        setCurrentStudyId(studyId);
+    const openModal = (study) => {
+        setCurrentStudyId(study.id);
+        setCurrentPatientId(study.patient_id);
         setIsModalOpen(true);
     };
     
@@ -210,6 +281,52 @@ const DashboardLaboratory = () => {
                 <div className={styles["appointment"]}>
                 <div className={styles["my-estudios-section"]}>
                 <div className={styles["subtitle"]}>Cargar estudios</div>
+                <div className={styles['horizontal-scroll']}>
+                    {analysis.length > 0 ? (
+                        analysis.map((uploaded_analysis) => (
+                            <a className={styles['estudio-card']} key={uploaded_analysis.id}>
+                                <div onClick={() => handleDownload(uploaded_analysis.url)}>
+                                    <div className={styles['estudio-name']}>
+                                        {uploaded_analysis.file_name.substring(0, 12) + '...'}
+                                    </div>
+                                    <img
+                                        src='/document.png'
+                                        alt=''
+                                        className={styles['document-icon']}
+                                        style={{ alignSelf: 'center', margin: 'auto' }}
+                                        width={100}
+                                        height={100}
+                                    />
+                                    <div
+                                        className={styles['estudio-date']}
+                                        style={{ alignSelf: 'center', margin: 'auto', display: 'table', padding: '5px 0' }}
+                                    >
+                                        {new Date(uploaded_analysis.uploaded_at * 1000).toLocaleDateString('es-AR')}
+                                    </div>
+                                </div>
+                                <img
+                                    src='/trash_icon.png'
+                                    alt=''
+                                    className={styles['document-icon']}
+                                    style={{ alignSelf: 'center' }}
+                                    width={25}
+                                    height={25}
+                                    onClick={() => handleDeleteClick(uploaded_analysis.id)}
+                                />
+                            </a>
+                        ))
+                    ) : (
+                        <div
+                            style={{
+                                alignSelf: 'center',
+                                margin: 'auto',
+                                padding: '5px 0',
+                            }}
+                        >
+                            No hay análisis cargados
+                        </div>
+                    )}
+                </div>
                     <form className={styles["file-upload-form"]}>
                         <label
                             htmlFor="files"
@@ -236,6 +353,9 @@ const DashboardLaboratory = () => {
                         />
                     </form>
                 </div>
+
+                
+
                 <div className={styles["subtitle"]}>
                                 Detalles
                             </div>
@@ -254,6 +374,7 @@ const DashboardLaboratory = () => {
                 </div>
                 <button onClick={closeModal} className={styles["delete-button"]}>Cerrar</button>
                 <button onClick={() => handleConfirm(details, currentStudyId)} className={styles["edit-button"]}>Confirmar</button>
+                
             </Modal>
 
             <LaboratoryTabBar highlight='Proceso' />
@@ -333,7 +454,8 @@ const DashboardLaboratory = () => {
                                                             ]
                                                         }
                                                         onClick={() =>{
-                                                            openModal(study.id);
+                                                            openModal(study);
+                                                            //openModal(study.id);
                                                             /*handleLoadStudyInfo(
                                                                 study.id
                                                             )*/
