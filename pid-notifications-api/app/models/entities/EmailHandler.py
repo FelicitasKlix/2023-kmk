@@ -41,6 +41,7 @@ class EmailHandler:
             "APPROVED_LABORATORY": "Cuenta Laboratorio Aprobado",
             "REQUESTED_STUDY": "Estudio Solicitado",
             "FINISHED_STUDY": "Tu estudio esta listo!",
+            "LABORATORY_REGISTERED_ACCOUNT": "Bienvenid@!",
         }
         self.type = type
         self.subject = subject_for_email_type[self.type]

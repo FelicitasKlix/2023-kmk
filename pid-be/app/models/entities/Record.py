@@ -16,6 +16,7 @@ class Record:
     blood_type: str
     id: str
     observations: list
+    lab_details: list
 
     def __init__(
         self,
@@ -33,6 +34,7 @@ class Record:
         self.blood_type = blood_type
         self.id = id
         self.observations = []
+        self.lab_details = []
 
     @staticmethod
     def add_observation(id, observation, uid):
@@ -46,6 +48,18 @@ class Record:
         appt = Appointment.get_by_id(observation["appointment_id"])
         observation["appointment_date"] = appt.date
         record_ref.update({"observations": firestore.ArrayUnion([observation])})
+
+        updated_record = record_ref.get().to_dict()
+        return updated_record
+
+    @staticmethod
+    def add_lab_details(id, study_title, lab_details):
+        record_ref = db.collection("records").document(id)
+        entry = {
+            "study_title": study_title,
+            "lab_details": lab_details
+        }
+        record_ref.update({"lab_details": firestore.ArrayUnion([entry])})
 
         updated_record = record_ref.get().to_dict()
         return updated_record

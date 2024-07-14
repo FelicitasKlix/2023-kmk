@@ -3,6 +3,8 @@ from datetime import datetime
 from firebase_admin import firestore
 import time
 
+from app.models.entities.Record import Record
+
 db = firestore.client()
 
 
@@ -60,9 +62,11 @@ class MedicalStudy:
         db.collection("medicalStudies").document(id).update({"status": "in-progress"})
 
     @staticmethod
-    def finish_medical_study(id):
+    def finish_medical_study(id, study_title, lab_details, patient_id):
         completion_date = int(datetime.now().timestamp())  # Obtener la fecha actual en formato timestamp
         db.collection("medicalStudies").document(id).update({"status": "finished", "completion_date": completion_date})
+        print("jeje")
+        Record.add_lab_details(patient_id, study_title, lab_details)
 
     @staticmethod
     def get_pending_medical_studies():
@@ -109,6 +113,10 @@ class MedicalStudy:
     @staticmethod
     def get_study_details(study_id):
         return db.collection("medicalStudies").document(study_id).get().to_dict()["details"]
+    
+    @staticmethod
+    def get_study_notes(study_id):
+        return db.collection("medicalStudies").document(study_id).get().to_dict()["lab_details"]
     
     @staticmethod
     def update_lab_details(study_id, lab_details):

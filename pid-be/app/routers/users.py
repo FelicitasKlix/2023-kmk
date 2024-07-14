@@ -198,24 +198,25 @@ async def register(
         }
         record = Record(**record_data, id=auth_uid)
         record.create()
+        email_type = "PATIENT_REGISTERED_ACCOUNT"
     elif register_request.role == "physician":
         physician = Physician(
             **register_request.model_dump(exclude_none=True), id=auth_uid
         )
         physician.create()
-    else:
+        email_type = "PHYSICIAN_REGISTERED_ACCOUNT"
+    elif register_request.role == "laboratory":
         print(register_request)
         laboratory = Laboratory(
             **register_request.model_dump(exclude_none=True), id=auth_uid
         )
         print(laboratory)
         laboratory.create()
+        email_type = "LABORATORY_REGISTERED_ACCOUNT"
     requests.post(
         "http://localhost:9000/emails/send",
         json={
-            "type": "PATIENT_REGISTERED_ACCOUNT"
-            if register_request.role == "patient"
-            else "PHYSICIAN_REGISTERED_ACCOUNT",
+            "type": email_type,
             "data": {
                 "name": register_request.name,
                 "last_name": register_request.last_name,

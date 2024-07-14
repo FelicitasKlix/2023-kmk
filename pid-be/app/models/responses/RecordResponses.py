@@ -14,6 +14,7 @@ class BasicRecordResponse(BaseModel):
     blood_type: str
     id: str
     observations: list
+    lab_details: list
 
 
 class GetRecordResponse(BaseModel):

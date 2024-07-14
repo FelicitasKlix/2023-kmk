@@ -24,6 +24,7 @@ const MedicalRecords = ({ searchParams }) => {
         blood_type: "",
         id: "",
         observations: [],
+        lab_details: [],
     });
     const [analysis, setAnalysis] = useState([]);
 
@@ -307,7 +308,10 @@ const MedicalRecords = ({ searchParams }) => {
                                     )}
                                 </div>
                             </div>
-
+                            <div className={styles["title"]}></div>
+                            <div className={styles["title"]}>
+                                    Observaciones
+                            </div>
                             <div className={styles["records-section"]}>
                                 {record.observations.length > 0 ? (
                                     <>
@@ -364,6 +368,56 @@ const MedicalRecords = ({ searchParams }) => {
                                     </div>
                                 )}
                             </div>
+                            <div className={styles["title"]}></div>
+                            <div className={styles["title"]}>
+                                    Estudios de Laboratorio
+                            </div>
+                            <div className={styles["records-section"]}>
+                            {record.lab_details.length > 0 ? (
+                                <>
+                                    {record.lab_details.map(
+                                        (lab_record, index) => {
+                                            console.log(lab_record);
+                                            return (
+                                                <div
+                                                    className={
+                                                        styles["record-card"]
+                                                    }
+                                                    key={index}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles[
+                                                                "record-date"
+                                                            ]
+                                                        }
+                                                    >
+                                                        Estudio:{" "}
+                                                        {lab_record.study_title}
+                                                    </div>
+                                                    <div
+                                                        className={
+                                                            styles[
+                                                                "record-observations"
+                                                            ]
+                                                        }
+                                                    >
+                                                        {
+                                                            lab_record.lab_details
+                                                        }
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                    )}
+                                </>
+                            ) : (
+                                <div className={styles["subtitle"]}>
+                                    No hay estudios de laboratorio en esta historia
+                                    clinica
+                                </div>
+                            )}
+                        </div>
                         </div>
                     </div>
 

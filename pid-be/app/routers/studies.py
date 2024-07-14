@@ -263,8 +263,14 @@ def finish_study(
     * Throw an error if it fails.
     """
     try:
-        MedicalStudy.finish_medical_study(study_id)
+        study_title = MedicalStudy.get_study_title(study_id)
+        lab_details = MedicalStudy.get_study_notes(study_id)
         patient_id = MedicalStudy.get_patient_id_from_study_id(study_id)
+        print(lab_details)
+        print(study_title)
+        print(patient_id)
+        MedicalStudy.finish_medical_study(study_id, study_title, lab_details, patient_id)
+        #patient_id = MedicalStudy.get_patient_id_from_study_id(study_id)
         #physician_id = MedicalStudy.get_physician_id_from_study_id(study_id)
         requests.post(
             "http://localhost:9000/emails/send",

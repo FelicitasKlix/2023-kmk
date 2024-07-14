@@ -181,7 +181,6 @@ const DashboardLaboratory = () => {
             toast.error("Ha ocurrido un error");
         }
         
-        // Cierra el modal u realiza otras acciones necesarias
         closeModal();
     };
     

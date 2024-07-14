@@ -21,6 +21,7 @@ class TemplateHandler:
             "APPROVED_LABORATORY": "ApprovedLaboratory",
             "REQUESTED_STUDY": "RequestedStudy",
             "FINISHED_STUDY": "FinishedStudy",
+            "LABORATORY_REGISTERED_ACCOUNT": "LaboratoryRegisteredAccount",
         }
         self.type = type
         self.template_name = template_for_email_type[self.type]
