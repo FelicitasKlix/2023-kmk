@@ -61,7 +61,7 @@ const DashboardPatient = () => {
             );
             console.log(response.data);
             if (response.data.pending_scores.length > 0) {
-                toast.info("Tiene reseñas pendientes por calificar");
+                //toast.info("Tiene reseñas pendientes por calificar");
                 setShowRatingModal(true);
               }
             // if (response.data.pending_scores.length > 0) {
@@ -896,7 +896,6 @@ const DashboardPatient = () => {
                                 Solicitar turno
                             </button>
                         </form>
-                        //aca iria el modal
                     </div>
                     
                     <Footer />

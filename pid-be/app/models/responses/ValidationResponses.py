@@ -56,6 +56,12 @@ class AllLaboratoriesPendingValidationsResponse(BaseModel):
 class AllApprovedLaboratoriesResponse(BaseModel):
     appoved_laboratories: list[Union[LaboratoryResponse, None]]
 
+class AllDeniedLaboratoriesResponse(BaseModel):
+    denied_laboratories: list[Union[LaboratoryResponse, None]]
+
 
 class GetApprovedLaboratoriesError(BaseModel):
+    detail: str
+
+class GetDeniedLabsError(BaseModel):
     detail: str

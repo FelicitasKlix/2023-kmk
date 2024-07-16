@@ -62,11 +62,10 @@ class MedicalStudy:
         db.collection("medicalStudies").document(id).update({"status": "in-progress"})
 
     @staticmethod
-    def finish_medical_study(id, study_title, lab_details, patient_id):
+    def finish_medical_study(id, study_title, lab_details, patient_id, physician_name, laboratory_name, request_date, completion_date):
         completion_date = int(datetime.now().timestamp())  # Obtener la fecha actual en formato timestamp
         db.collection("medicalStudies").document(id).update({"status": "finished", "completion_date": completion_date})
-        print("jeje")
-        Record.add_lab_details(patient_id, study_title, lab_details)
+        Record.add_lab_details(patient_id, study_title, lab_details, patient_id, physician_name, laboratory_name, request_date, completion_date)
 
     @staticmethod
     def get_pending_medical_studies():
@@ -105,6 +104,18 @@ class MedicalStudy:
     @staticmethod
     def get_physician_id_from_study_id(study_id):
         return db.collection("medicalStudies").document(study_id).get().to_dict()["physician_id"]
+    
+    @staticmethod
+    def get_laboratory_id_from_study_id(study_id):
+        return db.collection("medicalStudies").document(study_id).get().to_dict()["laboratory_id"]
+    
+    @staticmethod
+    def get_request_date_from_study_id(study_id):
+        return db.collection("medicalStudies").document(study_id).get().to_dict()["request_date"]
+    
+    @staticmethod
+    def get_completion_date_from_study_id(study_id):
+        return db.collection("medicalStudies").document(study_id).get().to_dict()["completion_date"]
     
     @staticmethod
     def get_study_title(study_id):

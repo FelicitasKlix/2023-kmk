@@ -117,7 +117,7 @@ const DashboardLaboratory = () => {
                                 width={200}
                                 height={200}
                                 onClick={() => {
-                                    toast.info("Actualizando estudios pendientes...");
+                                    toast.info("Actualizando...");
                                     fetchPendingStudies();
                                 }}
                             />

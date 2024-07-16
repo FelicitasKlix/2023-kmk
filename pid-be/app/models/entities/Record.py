@@ -53,11 +53,16 @@ class Record:
         return updated_record
 
     @staticmethod
-    def add_lab_details(id, study_title, lab_details):
+    def add_lab_details(id, study_title, lab_details, patient_id, physician_name, laboratory_name, request_date, completion_date):
         record_ref = db.collection("records").document(id)
         entry = {
             "study_title": study_title,
-            "lab_details": lab_details
+            "lab_details": lab_details,
+            "patient_id": patient_id,
+            "physician_name": physician_name,
+            "laboratory_name": laboratory_name,
+            "request_date": request_date,
+            "completion_date": completion_date
         }
         record_ref.update({"lab_details": firestore.ArrayUnion([entry])})
 
@@ -83,5 +88,6 @@ class Record:
                 "gender": self.gender,
                 "blood_type": self.blood_type,
                 "observations": self.observations,
+                "lab_details": self.lab_details
             }
         )

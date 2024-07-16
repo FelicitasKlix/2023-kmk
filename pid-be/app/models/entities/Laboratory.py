@@ -56,8 +56,19 @@ class Laboratory:
         return [lab.to_dict() for lab in pending_labs]
     
     @staticmethod
+    def get_denied_labs():
+        denied_labs = (
+            db.collection("laboratories").where("approved", "==", "denied").get()
+        )
+        return [lab.to_dict() for lab in denied_labs]
+    
+    @staticmethod
     def get_laboratory_email(id):
         return db.collection("laboratories").document(id).get().to_dict()["email"]
+    
+    @staticmethod
+    def get_laboratory_name(id):
+        return db.collection("laboratories").document(id).get().to_dict()["first_name"], db.collection("laboratories").document(id).get().to_dict()["last_name"]
 
     def create(self):
         if db.collection("laboratories").document(self.id).get().exists:

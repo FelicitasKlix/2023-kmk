@@ -53,6 +53,10 @@ const DashboardLaboratory = () => {
     };
 
     const ratingModalStyles = {
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1000 // Un valor mayor que el z-index del header
+        },
         content: {
             top: "50%",
             left: "50%",
@@ -61,6 +65,7 @@ const DashboardLaboratory = () => {
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
             width: "80%",
+            zIndex: 1001
         },
     };
 
@@ -396,7 +401,7 @@ const DashboardLaboratory = () => {
                                 width={200}
                                 height={200}
                                 onClick={() => {
-                                    toast.info("Actualizando estudios pendientes...");
+                                    toast.info("Actualizando...");
                                     fetchInProgressStudies();
                                 }}
                             />

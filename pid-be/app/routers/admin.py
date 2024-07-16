@@ -28,7 +28,9 @@ from app.models.responses.ValidationResponses import (
     SuccessfulAdminSpecialtiesGetResponse,
     AllLaboratoriesPendingValidationsResponse,
     AllApprovedLaboratoriesResponse,
-    GetApprovedLaboratoriesError
+    GetApprovedLaboratoriesError,
+    AllDeniedLaboratoriesResponse,
+    GetDeniedLabsError
 )
 
 load_dotenv()
@@ -407,9 +409,9 @@ async def approve_laboratory(laboratory_id: str, uid=Depends(Auth.is_admin)):
     status_code=status.HTTP_200_OK,
     response_model=AllLaboratoriesPendingValidationsResponse,
     responses={
-        401: {"model": GetPendingValidationsError},
-        403: {"model": GetPendingValidationsError},
-        500: {"model": GetPendingValidationsError},
+        401: {"model": GetDeniedLabsError},
+        403: {"model": GetDeniedLabsError},
+        500: {"model": GetDeniedLabsError},
     },
 )
 def get_all_laboratories_pending_validations(uid=Depends(Auth.is_admin)):
@@ -476,6 +478,66 @@ async def deny_laboratory(laboratory_id: str, uid=Depends(Auth.is_admin)):
         return {"message": "Laboratory denied successfully"}
     except Exception as e:
         print(e)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+@router.get(
+    "/labs-working",
+    status_code=status.HTTP_200_OK,
+    response_model=AllApprovedLaboratoriesResponse,
+    responses={
+        401: {"model": GetApprovedLaboratoriesError},
+        403: {"model": GetApprovedLaboratoriesError},
+        500: {"model": GetApprovedLaboratoriesError},
+    },
+)
+def get_all_working_labs(uid=Depends(Auth.is_admin)):
+    """
+    Get all working labs.
+
+    This will allow superusers to retrieve all working labs.
+
+    This path operation will:
+
+    * Return all of the working labs.
+    * Throw an error if appointment retrieving fails.
+    """
+    try:
+        labs_working = Laboratory.get_approved_labs()
+        return {"appoved_laboratories": labs_working}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+@router.get(
+    "/labs-blocked",
+    status_code=status.HTTP_200_OK,
+    response_model=AllDeniedLaboratoriesResponse,
+    responses={
+        401: {"model": GetApprovedLaboratoriesError},
+        403: {"model": GetApprovedLaboratoriesError},
+        500: {"model": GetApprovedLaboratoriesError},
+    },
+)
+def get_all_blocked_labs(uid=Depends(Auth.is_admin)):
+    """
+    Get all blocked labs.
+
+    This will allow superusers to retrieve all blocked labs.
+
+    This path operation will:
+
+    * Return all of the blocked labs.
+    * Throw an error if appointment retrieving fails.
+    """
+    try:
+        denied_labs = Laboratory.get_denied_labs()
+        return {"denied_laboratories": denied_labs}
+    except:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"detail": "Internal server error"},

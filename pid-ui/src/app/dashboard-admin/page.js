@@ -21,8 +21,10 @@ const Admin = () => {
     const [specialties, setSpecialties] = useState([]);
     const [newSpecialty, setNewSpecialty] = useState("");
     const [physicians, setPhysicians] = useState([]);
+    const [approvedLabs, setLabs] = useState([]);
     const [pendingPhysicians, setPendingPhysicians] = useState([]);
     const [blockedPhysicians, setBlockedPhysicians] = useState([]);
+    const [blockedLabs, setBlockedLabs] = useState([]);
     const [metrics, setMetrics] = useState({});
     const [showModal, setShowModal] = useState(false);
     const [selectedSpecialty, setSelectedSpecialty] = useState("");
@@ -233,6 +235,44 @@ const Admin = () => {
         }
     };
 
+    const fetchLabs = async () => {
+        try {
+            const response = await axios.get(
+                `${apiURL}admin/labs-working`,
+                {
+                    httpsAgent: agent,
+                }
+            );
+            console.log(response.data.appoved_laboratories);
+            setLabs(response.data.appoved_laboratories);
+            !firstLoad ? toast.success("Laboratorios actualizados") : null;
+        } catch (error) {
+            console.error(error);
+            !firstLoad
+                ? toast.error("Error al actualizar los laboratorios")
+                : null;
+        }
+    };
+
+    const fetchBlockedLabs = async () => {
+        try {
+            const response = await axios.get(
+                `${apiURL}admin/labs-blocked`,
+                {
+                    httpsAgent: agent,
+                }
+            );
+            console.log(response.data.denied_laboratories);
+            setBlockedLabs(response.data.denied_laboratories);
+            !firstLoad ? toast.success("Laboratorios actualizados") : null;
+        } catch (error) {
+            console.error(error);
+            !firstLoad
+                ? toast.error("Error al actualizar los laboratorios")
+                : null;
+        }
+    };
+
     const fetchBlockedPhysicians = async () => {
         try {
             const response = await axios.get(
@@ -335,6 +375,7 @@ const Admin = () => {
             toast.success("Laboratorio aprobado");
             setFirstLoad(true);
             fetchPendingLaboratories();
+            fetchBlockedLabs();
             setFirstLoad(false);
         } catch (error) {
             console.log(error);
@@ -355,6 +396,7 @@ const Admin = () => {
             toast.success("Laboratorio denegado");
             setFirstLoad(true);
             fetchPendingLaboratories();
+            fetchBlockedLabs();
             setFirstLoad(false);
         } catch (error) {
             console.log(error);
@@ -385,6 +427,8 @@ const Admin = () => {
             fetchStudies();
             fetchPhysicians();
             fetchBlockedPhysicians();
+            fetchLabs();
+            fetchBlockedLabs();
             fetchPendingPhysicians().then(() => setIsLoading(false));
             fetchPendingLaboratories().then(() => setIsLoading(false));
             setFirstLoad(false);
@@ -910,6 +954,149 @@ const Admin = () => {
                                 ) : (
                                     <div className={styles["subtitle"]}>
                                         No hay aprobaciones pendientes
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className={styles.form}>
+                            <div className={styles["title"]}>
+                                Laboratorios en funciones
+                            </div>
+                            <Image
+                                src='/refresh_icon.png'
+                                alt='Notificaciones'
+                                className={styles["refresh-icon"]}
+                                width={200}
+                                height={200}
+                                onClick={() => {
+                                    toast.info("Actualizando laboratorios...");
+                                    fetchLabs();
+                                }}
+                            />
+                            <div className={styles["admin-section"]}>
+                                {approvedLabs.length > 0 ? (
+                                    <div>
+                                        {approvedLabs.map((lab) => (
+                                            <div
+                                                key={lab.id}
+                                                className={
+                                                    styles["appointment"]
+                                                }
+                                            >
+                                                <div
+                                                    className={
+                                                        styles["subtitle"]
+                                                    }
+                                                >
+                                                    {lab.first_name +
+                                                        " " +
+                                                        lab.last_name}
+                                                </div>
+                                                <p>
+                                                    Email:{" "}
+                                                    {lab.email}
+                                                </p>
+                                                <div
+                                                    className={
+                                                        styles[
+                                                            "appointment-buttons-container"
+                                                        ]
+                                                    }
+                                                >
+                                                    <button
+                                                        className={
+                                                            styles[
+                                                                "delete-button"
+                                                            ]
+                                                        }
+                                                        onClick={() =>
+                                                            handleDenyLaboratory(
+                                                                lab
+                                                            )
+                                                        }
+                                                    >
+                                                        Bloquear
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles["subtitle"]}>
+                                        No hay laboratorios en funciones
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className={styles.form}>
+                            <div className={styles["title"]}>
+                                Laboratorios bloqueados / denegados
+                            </div>
+                            <Image
+                                src='/refresh_icon.png'
+                                alt='Notificaciones'
+                                className={styles["refresh-icon"]}
+                                width={200}
+                                height={200}
+                                onClick={() => {
+                                    toast.info("Actualizando laboratorios...");
+                                    fetchBlockedLabs();
+                                }}
+                            />
+                            <div className={styles["admin-section"]}>
+                                {blockedLabs.length > 0 ? (
+                                    // If there are pending doctor approvals, map through them and display each appointment
+                                    <div>
+                                        {blockedLabs.map((lab) => (
+                                            <div
+                                                key={lab.id}
+                                                className={
+                                                    styles["appointment"]
+                                                }
+                                            >
+                                                <div
+                                                    className={
+                                                        styles["subtitle"]
+                                                    }
+                                                >
+                                                    {lab.first_name +
+                                                        " " +
+                                                        lab.last_name}
+                                                </div>
+                                                <p>
+                                                    Email:{" "}
+                                                    {doctor.specialty}
+                                                </p>
+                                                <div
+                                                    className={
+                                                        styles[
+                                                            "appointment-buttons-container"
+                                                        ]
+                                                    }
+                                                >
+                                                    <button
+                                                        className={
+                                                            styles[
+                                                                "approve-button"
+                                                            ]
+                                                        }
+                                                        // onClick={() =>
+                                                        //     handleUnblockPhysician(
+                                                        //         doctor
+                                                        //     )
+                                                        // }
+                                                    >
+                                                        Desbloquear
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    // If there are no pending doctor approvals, display the message
+                                    <div className={styles["subtitle"]}>
+                                        No hay laboratorios bloqueados
                                     </div>
                                 )}
                             </div>

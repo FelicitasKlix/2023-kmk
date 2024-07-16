@@ -138,6 +138,10 @@ class Physician:
     @staticmethod
     def get_email(id):
         return db.collection("physicians").document(id).get().to_dict()["email"]
+    
+    @staticmethod
+    def get_name_and_last_name(id):
+        return db.collection("physicians").document(id).get().to_dict()["first_name"], db.collection("physicians").document(id).get().to_dict()["last_name"]
 
     def create(self):
         if db.collection("physicians").document(self.id).get().exists:

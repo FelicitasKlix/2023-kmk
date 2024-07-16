@@ -31,6 +31,7 @@ const Registro = () => {
     const router = useRouter();
     const delay = (ms) => new Promise((res) => setTimeout(res, ms));
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // At request level
     const agent = new https.Agent({
@@ -58,6 +59,10 @@ const Registro = () => {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
       };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
 
     const fetchSpecialties = async () => {
         const response = await axios.get(`${apiURL}specialties`, {
@@ -308,19 +313,24 @@ const Registro = () => {
                         }}
                         required
                     />
-                    {/* <button
-                    type="button"
-                    className={styles["toggle-password-button"]}
-                    onClick={togglePasswordVisibility}
-                >
-                    {showPassword ? "🔒" : "👁"}
-                </button> */}
+                    <button
+                        type="button"
+                        className={styles["toggle-view-password-button"]}
+                        onClick={togglePasswordVisibility}
+                        >
+                        <img
+                            src={showPassword ? "/eye-closed.png" : "/eye-opened.png"}
+                            alt={showPassword ? 'Locked' : 'Eye'}
+                            style={{ width: '40px', height: '33px' }}
+                        />
+                    </button>
                     </div>
                 </div>
                 <div className={styles["form-group"]}>
                     <label htmlFor='confirmPassword'>Repetir Contraseña</label>
+                    <div className={styles["password-input-container"]}>
                     <input
-                        type={showPassword ? "text" : "password"}
+                        type={showConfirmPassword ? "text" : "password"}
                         id='confirmPassword'
                         value={confirmPassword}
                         onChange={(e) => {
@@ -329,19 +339,31 @@ const Registro = () => {
                         }}
                         required
                     />
+                    <button
+                        type="button"
+                        className={styles["toggle-view-password-button"]}
+                        onClick={toggleConfirmPasswordVisibility}
+                        >
+                        <img
+                            src={showConfirmPassword ? "/eye-closed.png" : "/eye-opened.png"}
+                            alt={showConfirmPassword ? 'Locked' : 'Eye'}
+                            style={{ width: '40px', height: '33px' }}
+                        />
+                    </button>
+                    </div>
                 </div>
                 <div className={styles["toggle-password-button-container"]}>
-                <button
+                {/* <button
                 type="button"
                 className={styles["toggle-view-password-button"]}
                 onClick={togglePasswordVisibility}
                 >
                 <img
-                    src={showPassword ? "/eye_closed.png" : "/eye_open.png"}
+                    src={showPassword ? "/eye-closed.png" : "/eye-opened.png"}
                     alt={showPassword ? 'Locked' : 'Eye'}
                     style={{ width: '40px', height: '40px' }}
                 />
-                </button>
+                </button> */}
             </div>
                 {error && (
                     <div className={styles["error-message"]}>{error}</div>

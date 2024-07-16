@@ -116,9 +116,9 @@ const Landing = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     >
                         <img
-                            src={showPassword ? "/eye_closed.png" : "/eye_open.png"}
+                            src={showPassword ? "/eye-closed.png" : "/eye-opened.png"}
                             alt={showPassword ? 'Locked' : 'Eye'}
-                            style={{ width: '40px', height: '40px' }}
+                            style={{ width: '40px', height: '33px' }}
                         />
                     </button>
                     </div>

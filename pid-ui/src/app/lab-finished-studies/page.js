@@ -26,6 +26,11 @@ const DashboardLaboratory = () => {
     const apiURL = process.env.NEXT_PUBLIC_API_URL;
     const [studies, setStudies] = useState([]);
     const router = useRouter();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentStudyId, setCurrentStudyId] = useState(null);
+    const[currentPatientName, setCurrentPatientName] = useState(null);
+    //const[currentStudyTitle, setCurrentStudyTitle] = useState(null);
+    //const[currentLabDetails, setCurrentLabDetails] = useState(null);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -44,6 +49,10 @@ const DashboardLaboratory = () => {
     };
 
     const ratingModalStyles = {
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1000 // Un valor mayor que el z-index del header
+        },
         content: {
             top: "50%",
             left: "50%",
@@ -51,7 +60,8 @@ const DashboardLaboratory = () => {
             bottom: "auto",
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
-            width: "auto",
+            width: "80%",
+            zIndex: 1001
         },
     };
 
@@ -84,6 +94,19 @@ const DashboardLaboratory = () => {
     //     }
     // };
 
+    const openModal = (study) => {
+        setCurrentStudyId(study.id);
+        setCurrentPatientName(study.patient_full_name);
+        //setCurrentStudyTitle(study.title);
+        //setCurrentLabDetails(study.lab_details);
+        console.log(study);
+        setIsModalOpen(true);
+    };
+    
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     useEffect(() => {
         axios.defaults.headers.common = {
             Authorization: `bearer ${localStorage.getItem("token")}`,
@@ -98,6 +121,18 @@ const DashboardLaboratory = () => {
 
     return (
         <div className={styles.dashboard}>
+
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                style={ratingModalStyles} // Puedes definir tus estilos personalizados aquí
+                ariaHideApp={false}
+            >
+                <div className={styles["title"]}>Gestion del Estudio - {currentStudyId} - {currentPatientName}</div>
+                <button onClick={closeModal} className={styles["delete-button"]}>Cerrar</button>
+                
+            </Modal>
+
             <LaboratoryTabBar highlight='Completados' />
             <Header role='laboratory' />
             
@@ -117,7 +152,7 @@ const DashboardLaboratory = () => {
                                 width={200}
                                 height={200}
                                 onClick={() => {
-                                    toast.info("Actualizando estudios pendientes...");
+                                    toast.info("Actualizando...");
                                     fetchFinishedStudies();
                                 }}
                             />
@@ -151,7 +186,7 @@ const DashboardLaboratory = () => {
                                                     ).toLocaleString("es-AR")}
                                                 </p>
                                                 <p>
-                                                    Detalle:{" "}
+                                                    Solicitud:{" "}
                                                     {study.details
                                                         .charAt(0)
                                                         .toUpperCase() +
@@ -180,11 +215,11 @@ const DashboardLaboratory = () => {
                                                                 "standard-button"
                                                             ]
                                                         }
-                                                        // onClick={() =>
-                                                        //     handleFinishStudy(
-                                                        //         study.id
-                                                        //     )
-                                                        // }
+                                                        onClick={() =>
+                                                            openModal(
+                                                                study
+                                                            )
+                                                        }
                                                     >
                                                         Visualizar{" "}
                                                     </button>

@@ -61,6 +61,13 @@ const PhysicianAgenda = () => {
         rejectUnauthorized: false,
     });
 
+    const ratingModalStyles = {
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1000 // Un valor mayor que el z-index del header
+        },
+    };
+
     const fetchAppointments = async () => {
         try {
             const response = await axios.get(
@@ -271,6 +278,7 @@ const PhysicianAgenda = () => {
                     isOpen={isAddObservationModalOpen}
                     onRequestClose={handleCloseEditModal}
                     // style={customStyles}
+                    style={ratingModalStyles}
                 >
                     <div
                         className={styles["new-record-section"]}

@@ -365,7 +365,8 @@ const MyRecord = () => {
                                 </div>
                             )}
                         </div>
-                        <div className={styles["title"]}></div>
+                        <div className={styles["blank"]}></div>
+                        
                         <div className={styles["title"]}>
                                     Estudios de Laboratorio
                         </div>
@@ -390,7 +391,19 @@ const MyRecord = () => {
                                                         }
                                                     >
                                                         Estudio:{" "}
-                                                        {lab_record.study_title}
+                                                        {lab_record.study_title}{" "}
+                                                        - Fecha de solicitud:{" "}
+                                                        {new Date(
+                                                            lab_record.request_date *
+                                                                1000
+                                                        ).toLocaleDateString(
+                                                            "es-AR"
+                                                        )}{" "}
+                                                        - Médico:{" "}
+                                                        {lab_record.physician_name[0] + " " + lab_record.physician_name[1]}
+                                                        {" "}
+                                                        - Laboratorio:{" "}
+                                                        {lab_record.laboratory_name[0] + " " + lab_record.laboratory_name[1]}
                                                     </div>
                                                     <div
                                                         className={
