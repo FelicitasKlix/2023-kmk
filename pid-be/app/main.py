@@ -98,7 +98,7 @@ async def root() -> RedirectResponse:
 @app.get("/test-firebase")
 async def test_firebase():
     try:
-        response = requests.get("https://www.googleapis.com/")
+        response = requests.get("https://accounts.google.com/o/oauth2/auth")
         response.raise_for_status()  # Lanza una excepción si hay un error HTTP
         return {"message": "Conexión exitosa con Firebase"}
     except requests.RequestException as e:
