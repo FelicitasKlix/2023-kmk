@@ -56,8 +56,18 @@ router = APIRouter(
     prefix="/users", tags=["Users"], responses={404: {"description": "Not found"}}
 )
 
-with open("credentials/client.json") as fp:
-    firebase_client_config = json.loads(fp.read())
+# with open("credentials/client.json") as fp:
+#     firebase_client_config = json.loads(fp.read())
+
+# Cargar las credenciales desde la variable de entorno GOOGLE_APPLICATION_CREDENTIALS
+firebase_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
+if firebase_credentials_path:
+    with open(firebase_credentials_path) as fp:
+        firebase_client_config = json.load(fp)
+else:
+    # Manejar el caso cuando la variable de entorno no está configurada
+    raise EnvironmentError("Variable de entorno GOOGLE_APPLICATION_CREDENTIALS no está configurada")
 
 
 @router.post(
