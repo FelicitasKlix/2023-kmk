@@ -341,6 +341,11 @@ const MyRecord = () => {
                                                         )}{" "}
                                                         - Médico:{" "}
                                                         {observation.physician}
+                                                        - Especialidad:{" "}
+                                                        {observation.specialty
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        (observation.specialty).slice(1)}
                                                     </div>
                                                     <div
                                                         className={
@@ -403,7 +408,7 @@ const MyRecord = () => {
                                                         {lab_record.physician_name[0] + " " + lab_record.physician_name[1]}
                                                         {" "}
                                                         - Laboratorio:{" "}
-                                                        {lab_record.laboratory_name[0] + " " + lab_record.laboratory_name[1]}
+                                                        {lab_record.laboratory_name[0] + " - " + lab_record.laboratory_name[1]}
                                                     </div>
                                                     <div
                                                         className={
@@ -413,7 +418,13 @@ const MyRecord = () => {
                                                         }
                                                     >
                                                         {
-                                                            lab_record.lab_details
+                                                            lab_record.lab_details.charAt(0).toUpperCase()+(lab_record.lab_details).slice(1)
+                                                            
+                                                        }
+                                                        <p></p>
+                                                        {
+                                                            "Url:"
+                                                            
                                                         }
                                                     </div>
                                                 </div>

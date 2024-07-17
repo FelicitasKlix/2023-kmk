@@ -353,7 +353,7 @@ const MedicalRecords = ({ searchParams }) => {
                                                             }
                                                         >
                                                             {
-                                                                observation.observation
+                                                                (observation.observation).charAt(0).toUpperCase()+(observation.observation).slice(1)
                                                             }
                                                         </div>
                                                     </div>
@@ -403,7 +403,7 @@ const MedicalRecords = ({ searchParams }) => {
                                                         }
                                                     >
                                                         {
-                                                            lab_record.lab_details
+                                                            (lab_record.lab_details).charAt(0).toUpperCase() + (lab_record.lab_details).slice(1)
                                                         }
                                                     </div>
                                                 </div>

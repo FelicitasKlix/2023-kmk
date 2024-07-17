@@ -345,6 +345,10 @@ const DashboardPatient = () => {
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
         },
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1000 // Un valor mayor que el z-index del header
+        },
     };
 
     const ratingModalStyles = {
@@ -598,7 +602,7 @@ const DashboardPatient = () => {
                                                 >
                                                     {
                                                         appointment.physician
-                                                            .specialty
+                                                            .specialty.charAt(0).toUpperCase() + (appointment.physician.specialty).slice(1)
                                                     }
                                                 </div>
                                                 <p>

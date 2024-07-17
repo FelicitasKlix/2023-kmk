@@ -906,10 +906,9 @@ const Admin = () => {
                                                         styles["subtitle"]
                                                     }
                                                 >
-                                                    {lab.first_name +
-                                                        " " +
-                                                        lab.last_name}
+                                                    {lab.first_name}
                                                 </div>
+                                                <p>Dirección: {lab.last_name}</p>
                                                 <p>E-mail: {lab.email}</p>
                                                 <div
                                                     className={
@@ -988,10 +987,12 @@ const Admin = () => {
                                                         styles["subtitle"]
                                                     }
                                                 >
-                                                    {lab.first_name +
-                                                        " " +
-                                                        lab.last_name}
+                                                    {lab.first_name}
                                                 </div>
+                                                <p>
+                                                    Dirección:{" "}
+                                                    {lab.last_name}
+                                                </p>
                                                 <p>
                                                     Email:{" "}
                                                     {lab.email}
@@ -1060,13 +1061,15 @@ const Admin = () => {
                                                         styles["subtitle"]
                                                     }
                                                 >
-                                                    {lab.first_name +
-                                                        " " +
-                                                        lab.last_name}
+                                                    {lab.first_name}
                                                 </div>
                                                 <p>
+                                                    Dirección:{" "}
+                                                    {lab.last_name}
+                                                </p>
+                                                <p>
                                                     Email:{" "}
-                                                    {doctor.specialty}
+                                                    {lab.email}
                                                 </p>
                                                 <div
                                                     className={

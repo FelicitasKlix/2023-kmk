@@ -395,7 +395,7 @@ const PhysicianAgenda = () => {
                                 <option value=''>Selecciona un laboratorio</option>
                                 {labs.map((lab) => (
                                     <option key={lab.id} value={lab.id}>
-                                        {lab.email}
+                                        {lab.first_name}
                                     </option>
                                 ))}
                             </select>

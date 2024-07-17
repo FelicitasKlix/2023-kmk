@@ -261,8 +261,8 @@ const DashboardPatient = () => {
                                     Turnos pendientes de reseña
                                 </div>
                                 <div className={styles["subtitle"]}>
-                                    Usted tiene {appointments.length} turnos
-                                    pendientes de reseña.
+                                    Usted tiene {appointments.length} turno/s
+                                    pendiente/s de reseña.
                                 </div>
                                 <div className={styles["subtitle"]}>
                                     Por favor, seleccione un turno para dejar su
@@ -297,7 +297,11 @@ const DashboardPatient = () => {
                                                             styles["subtitle"]
                                                         }
                                                     >
-                                                        {appointment.specialty}
+                                                        {appointment.specialty
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        appointment.specialty.slice(1)}
+                                                        
                                                     </div>
                                                     <p>
                                                         Profesional:{" "}

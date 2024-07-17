@@ -26,11 +26,11 @@ const DashboardLaboratory = () => {
     const apiURL = process.env.NEXT_PUBLIC_API_URL;
     const [studies, setStudies] = useState([]);
     const router = useRouter();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentStudyId, setCurrentStudyId] = useState(null);
-    const[currentPatientName, setCurrentPatientName] = useState(null);
-    //const[currentStudyTitle, setCurrentStudyTitle] = useState(null);
-    //const[currentLabDetails, setCurrentLabDetails] = useState(null);
+    // const [isModalOpen, setIsModalOpen] = useState(false);
+    // const [currentStudyId, setCurrentStudyId] = useState(null);
+    // const[currentPatientName, setCurrentPatientName] = useState(null);
+    // const[currentStudyTitle, setCurrentStudyTitle] = useState(null);
+    // const[currentLabDetails, setCurrentLabDetails] = useState(null);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -94,18 +94,18 @@ const DashboardLaboratory = () => {
     //     }
     // };
 
-    const openModal = (study) => {
-        setCurrentStudyId(study.id);
-        setCurrentPatientName(study.patient_full_name);
-        //setCurrentStudyTitle(study.title);
-        //setCurrentLabDetails(study.lab_details);
-        console.log(study);
-        setIsModalOpen(true);
-    };
+    // const openModal = (study) => {
+    //     setCurrentStudyId(study.id);
+    //     setCurrentPatientName(study.patient_full_name);
+    //     setCurrentStudyTitle(study.title);
+    //     setCurrentLabDetails(study.lab_details);
+    //     console.log(study);
+    //     setIsModalOpen(true);
+    // };
     
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
+    // const closeModal = () => {
+    //     setIsModalOpen(false);
+    // };
 
     useEffect(() => {
         axios.defaults.headers.common = {
@@ -122,16 +122,20 @@ const DashboardLaboratory = () => {
     return (
         <div className={styles.dashboard}>
 
-            <Modal
+            {/* <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
                 style={ratingModalStyles} // Puedes definir tus estilos personalizados aquí
                 ariaHideApp={false}
             >
-                <div className={styles["title"]}>Gestion del Estudio - {currentStudyId} - {currentPatientName}</div>
+                <div className={styles["title"]}>Información del Estudio - {currentStudyId}</div>
+                <div className={styles["subtitle"]}>Paciente: {currentPatientName}</div>
+                <div className={styles["subtitle"]}>Pedido: {currentStudyTitle}</div>
+                <div className={styles["subtitle"]}>Resultados: {currentLabDetails}</div>
+                <div className={styles["subtitle"]}>Archivo: {currentPatientName}</div>
                 <button onClick={closeModal} className={styles["delete-button"]}>Cerrar</button>
                 
-            </Modal>
+            </Modal> */}
 
             <LaboratoryTabBar highlight='Completados' />
             <Header role='laboratory' />
@@ -180,29 +184,36 @@ const DashboardLaboratory = () => {
                                                         (study.title).slice(1)}
                                                 </div>
                                                 <p>
+                                                    Paciente:{" "}
+                                                    {study.patient_full_name}
+                                                </p>
+                                                <p>
+                                                    Resultados:{" "}
+                                                    {study.lab_details
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        (study.lab_details).slice(1)}
+                                                </p>
+                                                <p>
                                                     Fecha de solicitud:{" "}
                                                     {new Date(
                                                         study.request_date * 1000
                                                     ).toLocaleString("es-AR")}
                                                 </p>
-                                                <p>
-                                                    Solicitud:{" "}
-                                                    {study.details
-                                                        .charAt(0)
-                                                        .toUpperCase() +
-                                                        (study.details).slice(1)}
-                                                </p>
-                                                <p>
-                                                    Paciente:{" "}
-                                                    {study.patient_full_name}
-                                                </p>
+                                                
+                                                
                                                 <p>
                                                     Fecha de finalización:{" "}
                                                     {new Date(
                                                         study.completion_date * 1000
                                                     ).toLocaleString("es-AR")}
                                                 </p>
-                                                <div
+                                                <p>
+                                                    Url:{" "}
+                                                    {}
+                                                </p>
+                                                
+                                                {/* <div
                                                     className={
                                                         styles[
                                                             "appointment-buttons-container"
@@ -224,7 +235,7 @@ const DashboardLaboratory = () => {
                                                         Visualizar{" "}
                                                     </button>
 
-                                                </div>
+                                                </div> */}
                                             </div>
                                         ))}
                                     </div>
