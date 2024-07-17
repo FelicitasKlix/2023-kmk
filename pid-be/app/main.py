@@ -13,6 +13,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 
+#para test firebase
+from fastapi import FastAPI, HTTPException
+import requests
+
 
 load_dotenv()
 
@@ -88,6 +92,18 @@ async def root() -> RedirectResponse:
     It returns the OPENAPI docs for the KMK API
     """
     return RedirectResponse(url="/redoc", status_code=status.HTTP_303_SEE_OTHER)
+
+
+#para test firebase
+@app.get("/test-firebase")
+async def test_firebase():
+    try:
+        response = requests.get("https://www.googleapis.com/")
+        response.raise_for_status()  # Lanza una excepción si hay un error HTTP
+        return {"message": "Conexión exitosa con Firebase"}
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Error de conexión: {str(e)}")
+
 
 
 def start():
