@@ -375,6 +375,7 @@ const Admin = () => {
             toast.success("Laboratorio aprobado");
             setFirstLoad(true);
             fetchPendingLaboratories();
+            fetchLabs();
             fetchBlockedLabs();
             setFirstLoad(false);
         } catch (error) {
@@ -393,14 +394,38 @@ const Admin = () => {
                     httpsAgent: agent,
                 }
             );
-            toast.success("Laboratorio denegado");
+            //toast.success("Laboratorio denegado");
             setFirstLoad(true);
             fetchPendingLaboratories();
+            fetchLabs();
             fetchBlockedLabs();
             setFirstLoad(false);
         } catch (error) {
             console.log(error);
             toast.error("Error al denegar laboratorio");
+        }
+    };
+
+    const handleUnblockLab = async (laboratory) => {
+        //toast.info("Desbloqueando laboratorio...");
+        try {
+            toast.info("Desbloqueando laboratorio...");
+            console.log(laboratory.id);
+            const response = await axios.post(
+                `${apiURL}admin/unblock-lab/${laboratory.id}`,
+                {
+                    httpsAgent: agent,
+                }
+            );
+            toast.success("Laboratorio desbloqueado");
+            setFirstLoad(true);
+            fetchPendingLaboratories();
+            fetchLabs();
+            fetchBlockedLabs();
+            setFirstLoad(false);
+        } catch (error) {
+            console.log(error);
+            toast.error("Error al desbloquear laboratorio");
         }
     };
 
@@ -1084,11 +1109,11 @@ const Admin = () => {
                                                                 "approve-button"
                                                             ]
                                                         }
-                                                        // onClick={() =>
-                                                        //     handleUnblockPhysician(
-                                                        //         doctor
-                                                        //     )
-                                                        // }
+                                                        onClick={() =>
+                                                            handleUnblockLab(
+                                                                lab
+                                                            )
+                                                        }
                                                     >
                                                         Desbloquear
                                                     </button>

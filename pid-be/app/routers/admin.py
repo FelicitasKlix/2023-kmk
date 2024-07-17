@@ -542,3 +542,52 @@ def get_all_blocked_labs(uid=Depends(Auth.is_admin)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"detail": "Internal server error"},
         )
+    
+
+@router.post(
+    "/unblock-lab/{lab_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=SuccessfullValidationResponse,
+    responses={
+        400: {"model": ValidationErrorResponse},
+        401: {"model": ValidationErrorResponse},
+        403: {"model": ValidationErrorResponse},
+        500: {"model": ValidationErrorResponse},
+    },
+)
+async def unblock_laboratory(lab_id: str, uid=Depends(Auth.is_admin)):
+    """
+    Validate a laboratory.
+
+    This will allow superusers to unblock blocked labs.
+
+    This path operation will:
+
+    * Validate a physician.
+    * Change the _approved_ field from Laboratory from _denied_ to _pending_.
+    * Throw an error if the validation fails.
+    """
+    try:
+        if not Laboratory.is_blocked_laboratory(lab_id):
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"detail": "Can only unblock blocked labs"},
+            )
+        laboratory = Laboratory.get_blocked_by_id(lab_id)
+        Admin.unblock_lab(laboratory)
+        requests.post(
+            "http://localhost:9000/emails/send",
+            json={
+                "type": "PHYSICIAN_UNBLOCKED_ACCOUNT",
+                "data": {
+                    "email": laboratory["email"],
+                },
+            },
+        )
+        return {"message": "Physician unblocked successfully"}
+    except Exception as e:
+        print(e)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )

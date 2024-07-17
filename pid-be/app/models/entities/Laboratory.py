@@ -58,7 +58,7 @@ class Laboratory:
     @staticmethod
     def get_denied_labs():
         denied_labs = (
-            db.collection("laboratories").where("approved", "==", "denied").get()
+            db.collection("deniedLaboratories").where("approved", "==", "denied").get()
         )
         return [lab.to_dict() for lab in denied_labs]
     
@@ -69,6 +69,14 @@ class Laboratory:
     @staticmethod
     def get_laboratory_name(id):
         return db.collection("laboratories").document(id).get().to_dict()["first_name"], db.collection("laboratories").document(id).get().to_dict()["last_name"]
+    
+    @staticmethod
+    def is_blocked_laboratory(id):
+        return db.collection("deniedLaboratories").document(id).get().exists
+    
+    @staticmethod
+    def get_blocked_by_id(id):
+        return db.collection("deniedLaboratories").document(id).get().to_dict()
 
     def create(self):
         if db.collection("laboratories").document(self.id).get().exists:

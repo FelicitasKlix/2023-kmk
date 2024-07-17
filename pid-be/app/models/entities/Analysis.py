@@ -79,31 +79,60 @@ class Analysis:
         )
         return list(map(lambda analysis: analysis.to_dict(), uploaded_analysis))
     
-    @staticmethod
-    def get_laboratory_analyses(patient_id, analysis_ids):
-        print("hola hola hola")
-        try:
-            # Obtener referencia al documento del paciente
-            patient_ref = db.collection("analysis").document(patient_id)
+    # @staticmethod
+    # def get_laboratory_analyses(patient_id, analysis_ids):
+    #     print("hola hola hola")
+    #     try:
+    #         # Obtener referencia al documento del paciente
+    #         patient_ref = db.collection("analysis").document(patient_id)
             
-            # Filtrar los análisis por los IDs específicos proporcionados
-            uploaded_analysis = (
-                patient_ref
-                .collection("uploaded_analysis")
-                .where(firestore.FieldPath.document_id(), "in", analysis_ids)
-                .get()
-            )
-            print("!!!!!!!!!!")
-            print(analysis.to_dict() for analysis in uploaded_analysis)
-            # Transformar los resultados a un formato listo para la respuesta
-            return [analysis.to_dict() for analysis in uploaded_analysis]
+    #         # Filtrar los análisis por los IDs específicos proporcionados
+    #         uploaded_analysis = (
+    #             patient_ref
+    #             .collection("uploaded_analysis")
+    #             .where(firestore.FieldPath.document_id(), "in", analysis_ids)
+    #             .get()
+    #         )
+    #         print("!!!!!!!!!!")
+    #         print(analysis.to_dict() for analysis in uploaded_analysis)
+    #         # Transformar los resultados a un formato listo para la respuesta
+    #         return [analysis.to_dict() for analysis in uploaded_analysis]
         
-        except Exception as e:
-            print(f"Error fetching laboratory analyses: {e}")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Internal server error",
+    #     except Exception as e:
+    #         print(f"Error fetching laboratory analyses: {e}")
+    #         raise HTTPException(
+    #             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    #             detail="Internal server error",
+    #         )
+
+    @staticmethod
+    def get_laboratory_analyses(patient_id: str, analysis_ids: list[str]):
+        try:
+            db = firestore.client()
+            analyses_ref = (
+                db.collection("analysis")
+                .document(patient_id)
+                .collection("uploaded_analysis")
             )
+            
+            # Obtener todos los documentos
+            all_analyses = analyses_ref.get()
+            print("IDS de los analisis del lab actual: ",analysis_ids)
+            # Filtrar manualmente por los IDs deseados
+            filtered_analyses = [
+                analysis.to_dict() 
+                for analysis in all_analyses 
+                if analysis.id in analysis_ids
+            ]
+            
+            return filtered_analyses
+        except Exception as e:
+            # Log the error for debugging
+            print(f"Error in get_laboratory_analyses: {str(e)}")
+            raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error",
+                )
 
 
     @staticmethod

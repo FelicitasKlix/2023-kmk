@@ -242,7 +242,7 @@ const DashboardLaboratory = () => {
                                 ) : (
                                     // If there are no appointments, display the message
                                     <div className={styles["subtitle"]}>
-                                        No hay estudios pendientes
+                                        No hay estudios finalizados
                                     </div>
                                 )}
                                 {/* ... */}

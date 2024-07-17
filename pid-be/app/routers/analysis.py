@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, UploadFile, HTTPException, Form
+from fastapi import APIRouter, status, Depends, UploadFile, HTTPException, Form, Body
 from fastapi.responses import JSONResponse
 from typing import Union
 
@@ -178,3 +178,30 @@ async def lab_upload_analysis(
             content={"detail": "Internal server error"},
         )
 
+@router.post(
+    "/laboratory/{patient_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=list[SuccessfullAnalysisResponse],
+    responses={
+        401: {"model": AnalysisGetErrorResponse},
+        403: {"model": AnalysisGetErrorResponse},
+        500: {"model": AnalysisGetErrorResponse},
+    },
+)
+def get_laboratory_analysis(
+    patient_id: str, 
+    analysis_ids: list[str] = Body(...), 
+    uid=Depends(Auth.is_logged_in)
+):
+    try:
+        if not Laboratory.is_laboratory(uid):
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={"detail": "Only laboratories can access this endpoint"},
+            )
+        return Analysis.get_laboratory_analyses(patient_id, analysis_ids)
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": f"Internal server error: {str(e)}"},
+        )

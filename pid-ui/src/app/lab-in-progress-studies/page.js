@@ -35,6 +35,7 @@ const DashboardLaboratory = () => {
     const[currentPatientId, setCurrentPatientId] = useState(null);
     const [analysis, setAnalysis] = useState([]);
     const [currentAnalysis, setCurrentAnalysis] = useState([]);
+    const [labAnalysis, setLabAnalysis] = useState([]);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -57,16 +58,16 @@ const DashboardLaboratory = () => {
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
             zIndex: 1000 // Un valor mayor que el z-index del header
         },
-        content: {
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            bottom: "auto",
-            marginRight: "-50%",
-            transform: "translate(-50%, -50%)",
-            width: "80%",
-            zIndex: 1001
-        },
+        // content: {
+        //     top: "50%",
+        //     left: "50%",
+        //     right: "auto",
+        //     bottom: "auto",
+        //     marginRight: "-50%",
+        //     transform: "translate(-50%, -50%)",
+        //     width: "80%",
+        //     zIndex: 1001
+        // },
     };
 
     const fetchInProgressStudies = async () => {
@@ -97,6 +98,32 @@ const DashboardLaboratory = () => {
             console.log(error);
         }
     };
+
+    const getLaboratoryAnalyses = async (patientId, analysisIds) => {
+        try {
+          const response = await axios.post(`${apiURL}analysis/laboratory/${patientId}`, analysisIds);
+          console.log(response);
+          console.log(response.data);
+          setLabAnalysis(response.data);
+          //return response.data;
+        } catch (error) {
+          console.error('Error fetching laboratory analyses:', error);
+          throw error;
+        }
+      };
+      const fetchLabAnalysis = async (currentPatientId, labAnalysis) => {
+        try {
+          const response = await axios.post(`${apiURL}analysis/laboratory/${currentPatientId}`, labAnalysis);
+          console.log(response);
+          console.log(response.data);
+          //setLabAnalysis(response.data);
+          return response.data;
+        } catch (error) {
+          console.error('Error fetching laboratory analyses:', error);
+          throw error;
+        }
+      };
+
     const onSubmit = async (e) => {
         toast.info("Subiendo análisis");
         console.log("---->"+currentPatientId);
@@ -128,11 +155,14 @@ const DashboardLaboratory = () => {
                 const updatedAnalysis = [...prevAnalysis, ...newAnalysisIds];
                 //fetchAnalysis(updatedAnalysis);
                 console.log(updatedAnalysis);
+                getLaboratoryAnalyses(currentPatientId, updatedAnalysis);
+                //setLabAnalysis(updatedAnalysis);
                 //fetchAnalysis(updatedAnalysis);
                 return updatedAnalysis;
             });
-            
+            //getLaboratoryAnalyses(currentPatientId, labAnalysis);
             fetchAnalysis();
+            //fetchLabAnalysis();
             //fetchFilteredAnalysis(currentPatientId, analysisIds);
             //setCurrentAnalysis(analysisIds);
             resetFileInput();
@@ -282,7 +312,7 @@ const DashboardLaboratory = () => {
                 style={ratingModalStyles} // Puedes definir tus estilos personalizados aquí
                 ariaHideApp={false}
             >
-                <div className={styles["title"]}>Gestion del Estudio - {currentStudyId}</div>
+                <div className={styles["title"]}>Gestion del Estudio</div>
                 <div className={styles["appointment"]}>
                 <div className={styles["my-estudios-section"]}>
                 <div className={styles["subtitle"]}>Cargar estudios</div>
@@ -492,7 +522,7 @@ const DashboardLaboratory = () => {
                                 ) : (
                                     // If there are no appointments, display the message
                                     <div className={styles["subtitle"]}>
-                                        No hay estudios pendientes
+                                        No hay estudios en proceso
                                     </div>
                                 )}
                                 {/* ... */}
