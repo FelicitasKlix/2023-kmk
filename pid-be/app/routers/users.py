@@ -146,9 +146,11 @@ async def register(
     """
 
     url = os.environ.get("REGISTER_URL")
+    print(url)
     auth_uid = None
     try:
         user = auth.get_user_by_email(register_request.email)
+        print(user)
         auth_uid = user.uid
     except:
         print("[+] User doesnt exist in authentication")
