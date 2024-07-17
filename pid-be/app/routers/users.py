@@ -149,11 +149,16 @@ async def register(
     print(url)
     auth_uid = None
     try:
+        print(f"Fetching user by email: {register_request.email}")
         user = auth.get_user_by_email(register_request.email)
-        print(user)
         auth_uid = user.uid
-    except:
-        print("[+] User doesnt exist in authentication")
+        print(f"User found with UID: {auth_uid}")
+    # except:
+    #     print("[+] User doesnt exist in authentication")
+    except auth.UserNotFoundError:
+        print(f"User with email {register_request.email} not found, creating new user.")
+    except Exception as e:
+        print(f"Error fetching user: {e}")
 
     if not auth_uid:
         try:
