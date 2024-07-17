@@ -196,19 +196,24 @@ async def register(
             **register_request.model_dump(exclude_none=True), id=auth_uid
         )
         physician.create()
-    requests.post(
-        "http://localhost:9000/emails/send",
-        json={
-            "type": "PATIENT_REGISTERED_ACCOUNT"
-            if register_request.role == "patient"
-            else "PHYSICIAN_REGISTERED_ACCOUNT",
-            "data": {
-                "name": register_request.name,
-                "last_name": register_request.last_name,
-                "email": register_request.email,
+    try:
+        response=requests.post(
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-felicitasklix-notifications.onrender.com/emails/send",
+            json={
+                "type": "PATIENT_REGISTERED_ACCOUNT"
+                if register_request.role == "patient"
+                else "PHYSICIAN_REGISTERED_ACCOUNT",
+                "data": {
+                    "name": register_request.name,
+                    "last_name": register_request.last_name,
+                    "email": register_request.email,
+                },
             },
-        },
-    )
+        )
+        response.raise_for_status() 
+    except requests.RequestException as e:
+        print(f"Error al enviar la notificación: {e}")
     return {"message": "Successfull registration"}
 
 
