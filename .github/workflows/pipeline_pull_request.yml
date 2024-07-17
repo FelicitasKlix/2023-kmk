@@ -55,7 +55,7 @@ jobs:
                   AUTH_PROVIDER_X509_CERT_URL: ${{ secrets.AUTH_PROVIDER_X509_CERT_URL }}
                   CLIENT_X509_CERT_URL: ${{ secrets.CLIENT_X509_CERT_URL }}
                   UNIVERSE_DOMAIN: ${{ secrets.UNIVERSE_DOMAIN }}
-                  FIREBASE_AUTH_EMULATOR_HOST: ${{ secrets.FIREBASE_AUTH_EMULATOR_HOST }}
+                  #FIREBASE_AUTH_EMULATOR_HOST: ${{ secrets.FIREBASE_AUTH_EMULATOR_HOST }}
                   FIRESTORE_EMULATOR_HOST: ${{ secrets.FIRESTORE_EMULATOR_HOST }}
                   FIREBASE_STORAGE_EMULATOR_HOST: ${{ secrets.FIREBASE_STORAGE_EMULATOR_HOST }}
 
