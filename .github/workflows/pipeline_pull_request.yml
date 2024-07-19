@@ -4,7 +4,7 @@ on:
     pull_request:
         types: [opened, reopened, synchronize, edited]
     push:
-        branches: ["dev", "main"]
+        branches: ["dev", "main", "dockerfile-branch"]
 
 jobs:
     test-backend:
