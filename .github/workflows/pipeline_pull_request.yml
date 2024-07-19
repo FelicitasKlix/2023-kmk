@@ -56,11 +56,12 @@ jobs:
                   CLIENT_X509_CERT_URL: ${{ secrets.CLIENT_X509_CERT_URL }}
                   UNIVERSE_DOMAIN: ${{ secrets.UNIVERSE_DOMAIN }}
                   #FIREBASE_AUTH_EMULATOR_HOST: ${{ secrets.FIREBASE_AUTH_EMULATOR_HOST }}
-                  FIRESTORE_EMULATOR_HOST: ${{ secrets.FIRESTORE_EMULATOR_HOST }}
-                  FIREBASE_STORAGE_EMULATOR_HOST: ${{ secrets.FIREBASE_STORAGE_EMULATOR_HOST }}
+                  #FIRESTORE_EMULATOR_HOST: ${{ secrets.FIRESTORE_EMULATOR_HOST }}
+                  #FIREBASE_STORAGE_EMULATOR_HOST: ${{ secrets.FIREBASE_STORAGE_EMULATOR_HOST }}
 
               working-directory: pid-be
-              run: firebase emulators:exec "poetry run pytest"
+              #run: firebase emulators:exec "poetry run pytest"
+              run: poetry run pytest
 
             - name: Run notifications tests
               env:
