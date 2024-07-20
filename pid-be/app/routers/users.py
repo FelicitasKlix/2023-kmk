@@ -214,7 +214,8 @@ async def register(
         laboratory.create()
         email_type = "LABORATORY_REGISTERED_ACCOUNT"
     requests.post(
-        "http://localhost:9000/emails/send",
+        #"http://localhost:9000/emails/send",
+        "https://two023-kmk-45yo.onrender.com/emails/send",
         json={
             "type": email_type,
             "data": {
@@ -363,7 +364,8 @@ def change_password(
     if login_response.status_code == 200:
         auth.update_user(uid, **{"password": change_password_request.new_password})
         requests.post(
-            "http://localhost:9000/emails/send",
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "PASSWORD_CHANGED",
                 "data": {

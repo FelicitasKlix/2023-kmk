@@ -175,7 +175,8 @@ def request_study(
         study.create()
         lab_email = Laboratory.get_laboratory_email(study_request_info.laboratory_id)
         requests.post(
-            "http://localhost:9000/emails/send",
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "REQUESTED_STUDY",
                 "data": {
@@ -277,7 +278,8 @@ def finish_study(
         #patient_id = MedicalStudy.get_patient_id_from_study_id(study_id)
         #physician_id = MedicalStudy.get_physician_id_from_study_id(study_id)
         requests.post(
-            "http://localhost:9000/emails/send",
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "FINISHED_STUDY",
                 "data": {
