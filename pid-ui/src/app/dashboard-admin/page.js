@@ -188,7 +188,7 @@ const Admin = () => {
             );
             console.log(response.data.physicians_pending_validation);
             setPendingPhysicians(response.data.physicians_pending_validation);
-            !firstLoad ? toast.success("Profesionales actualizados") : null;
+            //!firstLoad ? toast.success("Profesionales actualizados") : null;
         } catch (error) {
             console.error(error);
             !firstLoad
@@ -207,7 +207,7 @@ const Admin = () => {
             );
             console.log(response.data.laboratories_to_validate);
             setPendingLaboratories(response.data.laboratories_to_validate);
-            !firstLoad ? toast.success("Laboratorios actualizados") : null;
+            //!firstLoad ? toast.success("Laboratorios actualizados") : null;
         } catch (error) {
             console.error(error);
             !firstLoad
@@ -264,7 +264,7 @@ const Admin = () => {
             );
             console.log(response.data.denied_laboratories);
             setBlockedLabs(response.data.denied_laboratories);
-            !firstLoad ? toast.success("Laboratorios actualizados") : null;
+            //!firstLoad ? toast.success("Laboratorios actualizados") : null;
         } catch (error) {
             console.error(error);
             !firstLoad
@@ -283,7 +283,7 @@ const Admin = () => {
             );
             console.log(response.data.physicians_blocked);
             setBlockedPhysicians(response.data.physicians_blocked);
-            !firstLoad ? toast.success("Profesionales actualizados") : null;
+            //!firstLoad ? toast.success("Profesionales actualizados") : null;
         } catch (error) {
             console.error(error);
             !firstLoad

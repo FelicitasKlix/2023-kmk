@@ -209,8 +209,34 @@ const DashboardLaboratory = () => {
                                                     ).toLocaleString("es-AR")}
                                                 </p>
                                                 <p>
-                                                    Url:{" "}
-                                                    {}
+                                                {/* <a href={study.file_url} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                                    Link de descarga del archivo
+                                                </a> */}
+                                                {study.files && study.files.length > 0 ? (
+                                                        study.files.map((file, fileIndex) => (
+                                                            <div key={fileIndex}>
+                                                                <a 
+                                                                    href={file.url} 
+                                                                    target="_blank" 
+                                                                    rel="noopener noreferrer" 
+                                                                    style={{ color: 'blue', textDecoration: 'underline' }}
+                                                                >
+                                                                    Link de descarga del archivo {fileIndex + 1}
+                                                                </a>
+                                                            </div>
+                                                        ))
+                                                        ) : study.file_url ? (
+                                                            <a 
+                                                                href={study.file_url} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer" 
+                                                                style={{ color: 'blue', textDecoration: 'underline' }}
+                                                            >
+                                                                Link de descarga del archivo
+                                                            </a>
+                                                        ) : (
+                                                            <p>No hay archivos disponibles</p>
+                                                        )}
                                                 </p>
                                                 
                                                 {/* <div

@@ -62,10 +62,10 @@ class MedicalStudy:
         db.collection("medicalStudies").document(id).update({"status": "in-progress"})
 
     @staticmethod
-    def finish_medical_study(id, study_title, lab_details, patient_id, physician_name, laboratory_name, request_date, completion_date):
+    def finish_medical_study(id, study_title, lab_details, files, patient_id, physician_name, laboratory_name, request_date, completion_date):
         completion_date = int(datetime.now().timestamp())  # Obtener la fecha actual en formato timestamp
         db.collection("medicalStudies").document(id).update({"status": "finished", "completion_date": completion_date})
-        Record.add_lab_details(patient_id, study_title, lab_details, patient_id, physician_name, laboratory_name, request_date, completion_date)
+        Record.add_lab_details(patient_id, study_title, lab_details, files, patient_id, physician_name, laboratory_name, request_date, completion_date)
 
     @staticmethod
     def get_pending_medical_studies():
@@ -130,6 +130,15 @@ class MedicalStudy:
         return db.collection("medicalStudies").document(study_id).get().to_dict()["lab_details"]
     
     @staticmethod
+    def get_study_file_url(study_id):
+        return db.collection("medicalStudies").document(study_id).get().to_dict()["file_url"]
+    
+    @staticmethod
+    def get_study_files(study_id):
+        study = db.collection("medicalStudies").document(study_id).get().to_dict()
+        return study.get("files", [])  # Devuelve una lista vacía si no hay archivos
+    
+    @staticmethod
     def update_lab_details(study_id, lab_details):
         db.collection("medicalStudies").document(study_id).update({"lab_details": lab_details})
 
@@ -138,11 +147,17 @@ class MedicalStudy:
         db.collection("medicalStudies").document(study_id).update({"file": file})
 
     @staticmethod
-    def update_study_details(study_id, details, file=None):
+    def update_study_details(study_id, details, files=None):
         update_data = {"lab_details": details}
-        if file is not None:
-            update_data["file"] = file
-        
+        if files is not None:
+            #update_data["files"] = files
+            files_data = [{"id": file.id, "url": file.url} for file in files]
+            update_data["files"] = files_data
+            #update_data["file"] = file
+            #update_data["file_url"]= file_url
+        #print("---------------------")
+        #print(file)
+        #print("---------------------")
         db.collection("medicalStudies").document(study_id).update(update_data)
 
 

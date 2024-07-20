@@ -79,6 +79,32 @@ class Analysis:
         )
         return list(map(lambda analysis: analysis.to_dict(), uploaded_analysis))
     
+    @staticmethod
+    def get_specific_files(file_ids, patient_id):
+        # analysis_list = []
+        # for file_id in file_ids:
+        #     # Asumimos que conocemos el patient_id. Si no, necesitaríamos buscarlo primero.
+        #     patient_docs = db.collection("analysis").document(patient_id).get()
+        #     for patient_doc in patient_docs:
+        #         file_doc = patient_doc.reference.collection("uploaded_analysis").document(file_id).get()
+        #         if file_doc.exists:
+        #             analysis_list.append(file_doc.to_dict())
+        #             break  # Salimos del bucle interno una vez que encontramos el archivo
+            uploaded_analysis = (
+                db.collection("analysis")
+                .document(patient_id)
+                .collection("uploaded_analysis")
+                .get()
+            )
+            analysis_list = list(map(lambda analysis: analysis.to_dict(), uploaded_analysis))
+            #print(analysis_list)
+            #return analysis_list
+            # Filter the analysis list to only include the documents with IDs in file_ids
+            filtered_analysis_list = list(filter(lambda analysis: analysis['id'] in file_ids, analysis_list))
+            
+            print(filtered_analysis_list)
+            return filtered_analysis_list
+
     # @staticmethod
     # def get_laboratory_analyses(patient_id, analysis_ids):
     #     print("hola hola hola")

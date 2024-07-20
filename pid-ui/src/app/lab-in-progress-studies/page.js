@@ -19,6 +19,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { Today } from "@mui/icons-material";
+import { set } from "date-fns";
 
 registerLocale("es", es);
 
@@ -36,6 +37,7 @@ const DashboardLaboratory = () => {
     const [analysis, setAnalysis] = useState([]);
     const [currentAnalysis, setCurrentAnalysis] = useState([]);
     const [labAnalysis, setLabAnalysis] = useState([]);
+    const [uploadedFileIds, setUploadedFileIds] = useState([]);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -156,12 +158,20 @@ const DashboardLaboratory = () => {
                 //fetchAnalysis(updatedAnalysis);
                 console.log(updatedAnalysis);
                 getLaboratoryAnalyses(currentPatientId, updatedAnalysis);
+                const ids = updatedAnalysis.map(file => file.id);
+                //console.log("FILE IDS: ", ids);
+                fetchCurrentAnalysis(updatedAnalysis);
                 //setLabAnalysis(updatedAnalysis);
                 //fetchAnalysis(updatedAnalysis);
                 return updatedAnalysis;
             });
             //getLaboratoryAnalyses(currentPatientId, labAnalysis);
-            fetchAnalysis();
+            //fetchAnalysis();
+            //file: labAnalysis[0].id,
+            //file_url:labAnalysis[0].url,
+            //const ids = labAnalysis.map(file => file.id);
+            //console.log("FILE IDS: ", ids);
+            //fetchCurrentAnalysis(ids);
             //fetchLabAnalysis();
             //fetchFilteredAnalysis(currentPatientId, analysisIds);
             //setCurrentAnalysis(analysisIds);
@@ -185,15 +195,25 @@ const DashboardLaboratory = () => {
     //     }
     // };
     
-    const fetchAnalysis = async () => {
+    // const fetchAnalysis = async () => {
+    //     try {
+    //         const response = await axios.get(`${apiURL}analysis/${currentPatientId}`);
+    //         setAnalysis(response.data); // Asumiendo que tienes un estado analysis para guardar los datos
+    //         console.log(response);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
+
+    const fetchCurrentAnalysis = async (fileIds) => {
         try {
-            const response = await axios.get(`${apiURL}analysis/${currentPatientId}`);
-            setAnalysis(response.data); // Asumiendo que tienes un estado analysis para guardar los datos
-            console.log(response);
+          const response = await axios.post(`${apiURL}analysis/get`, { patient_id: currentPatientId,file_ids: fileIds });
+          setAnalysis(response.data);
+          console.log(response);
         } catch (error) {
-            console.error(error);
+          console.error(error);
         }
-    };
+      };
 
     // const onSubmit = async (e) => {
     //     toast.info("Subiendo analisis");
@@ -267,8 +287,11 @@ const DashboardLaboratory = () => {
     const handleConfirm = async (details, studyId) => {
         //console.log("Valor de details:", details);
         //console.log("Id del estudio: ", studyId);
+        console.log("Archivos: ",labAnalysis);
         let userData = {
-            file: studyId,
+            //file: labAnalysis[0].id,
+            //file_url:labAnalysis[0].url,
+            files: labAnalysis.map(file => ({ id: file.id, url: file.url })),
             lab_details: details,
         };
         // Aquí puedes realizar cualquier lógica adicional con el valor de details
@@ -408,7 +431,7 @@ const DashboardLaboratory = () => {
                             />
                 </div>
                 <button onClick={closeModal} className={styles["delete-button"]}>Cerrar</button>
-                <button onClick={() => handleConfirm(details, currentStudyId)} className={styles["edit-button"]}>Confirmar</button>
+                <button onClick={() => handleConfirm(details, currentStudyId, file)} className={styles["edit-button"]}>Confirmar</button>
                 
             </Modal>
 

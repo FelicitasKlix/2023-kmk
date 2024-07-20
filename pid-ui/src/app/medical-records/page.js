@@ -405,6 +405,35 @@ const MedicalRecords = ({ searchParams }) => {
                                                         {
                                                             (lab_record.lab_details).charAt(0).toUpperCase() + (lab_record.lab_details).slice(1)
                                                         }
+                                                        <p></p>
+                                                        {/* <a href={lab_record.file_url} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                                            Link de descarga del archivo
+                                                        </a> */}
+                                                        {lab_record.files && lab_record.files.length > 0 ? (
+                                                        lab_record.files.map((file, fileIndex) => (
+                                                            <div key={fileIndex}>
+                                                                <a 
+                                                                    href={file.url} 
+                                                                    target="_blank" 
+                                                                    rel="noopener noreferrer" 
+                                                                    style={{ color: 'blue', textDecoration: 'underline' }}
+                                                                >
+                                                                    Link de descarga del archivo {fileIndex + 1}
+                                                                </a>
+                                                            </div>
+                                                        ))
+                                                    ) : lab_record.file_url ? (
+                                                        <a 
+                                                            href={lab_record.file_url} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer" 
+                                                            style={{ color: 'blue', textDecoration: 'underline' }}
+                                                        >
+                                                            Link de descarga del archivo
+                                                        </a>
+                                                    ) : (
+                                                        <p>No hay archivos disponibles</p>
+                                                    )}
                                                     </div>
                                                 </div>
                                             );

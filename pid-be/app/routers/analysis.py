@@ -13,6 +13,7 @@ from app.models.responses.AnalysisResponses import (
     AnalysisGetErrorResponse,
     SuccessfulAnalysisDeletionResponse,
 )
+from app.models.requests.FileRequests import FileRequest
 
 router = APIRouter(
     prefix="/analysis",
@@ -201,6 +202,32 @@ def get_laboratory_analysis(
             )
         return Analysis.get_laboratory_analyses(patient_id, analysis_ids)
     except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": f"Internal server error: {str(e)}"},
+        )
+    
+
+@router.post(
+    "/get",
+    status_code=status.HTTP_200_OK,
+    response_model=list[SuccessfullAnalysisResponse],
+    responses={
+        401: {"model": AnalysisGetErrorResponse},
+        500: {"model": AnalysisGetErrorResponse},
+    },
+)
+def get_specific_analysis(file_request: FileRequest, uid=Depends(Auth.is_logged_in)):
+    try:
+        if not (Physician.is_physician(uid) or Laboratory.is_laboratory(uid)):
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={"detail": "Only physicians or laboratories can view these analysis"},
+            )
+        print("IDS DE LOS FILES DEL LAB: ",file_request.file_ids)
+        return Analysis.get_specific_files(file_request.file_ids, file_request.patient_id)
+    except Exception as e:
+        print(f"Error in get_specific_analysis: {str(e)}")
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"detail": f"Internal server error: {str(e)}"},

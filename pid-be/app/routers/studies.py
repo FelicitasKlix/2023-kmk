@@ -266,6 +266,8 @@ def finish_study(
     try:
         study_title = MedicalStudy.get_study_title(study_id)
         lab_details = MedicalStudy.get_study_notes(study_id)
+        #file_url = MedicalStudy.get_study_file_url(study_id)
+        files = MedicalStudy.get_study_files(study_id)
         patient_id = MedicalStudy.get_patient_id_from_study_id(study_id)
         physician_id = MedicalStudy.get_physician_id_from_study_id(study_id)
         laboratory_id = MedicalStudy.get_laboratory_id_from_study_id(study_id)
@@ -274,7 +276,7 @@ def finish_study(
         physician_name = Physician.get_name_and_last_name(physician_id)
         laboratory_name = Laboratory.get_laboratory_name(laboratory_id)
         #MedicalStudy.finish_medical_study(study_id, study_title, lab_details, patient_id)
-        MedicalStudy.finish_medical_study(study_id, study_title, lab_details, patient_id, physician_name, laboratory_name, request_date, completion_date)
+        MedicalStudy.finish_medical_study(study_id, study_title, lab_details, files, patient_id, physician_name, laboratory_name, request_date, completion_date)
         #patient_id = MedicalStudy.get_patient_id_from_study_id(study_id)
         #physician_id = MedicalStudy.get_physician_id_from_study_id(study_id)
         requests.post(
@@ -328,7 +330,9 @@ def finish_study(
     * Throw an error if it fails.
     """
     try:
-        MedicalStudy.update_study_details(study_id, study_request_info.lab_details, study_request_info.file)
+        print(">>>>>>>>>>>>", study_request_info.files)
+        #print(">>>>>>>>>>>>", study_request_info.file_url)
+        MedicalStudy.update_study_details(study_id, study_request_info.lab_details, study_request_info.files)
         '''requests.post(
             "http://localhost:9000/emails/send",
             json={
