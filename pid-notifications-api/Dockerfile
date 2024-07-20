@@ -37,7 +37,7 @@ COPY ./app ./app
 RUN poetry install --no-dev --no-root
 
 WORKDIR $PYSETUP_PATH
-EXPOSE 8080
+#EXPOSE 8080
 
 # Launch main python script
 CMD ["poetry", "run", "start"]
