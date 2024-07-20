@@ -52,7 +52,7 @@ on:
 
 env:
     PROJECT_ID: kmk-final-felicitas-klix # TODO: update Google Cloud project id
-    SERVICE: core-be-api-prod # TODO: update Cloud Run service name
+    SERVICE: core-be-api # TODO: update Cloud Run service name
     REGION: us-central1 # TODO: update Cloud Run service region
 
 jobs:
