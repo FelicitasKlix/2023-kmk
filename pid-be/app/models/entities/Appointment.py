@@ -264,7 +264,8 @@ class Appointment:
         patient = Patient.get_by_id(self.patient_id)
         date = datetime.fromtimestamp(self.date)
         requests.post(
-            "http://localhost:9000/emails/send",
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-felicitasklix-notifications.onrender.com/emails/send",
             json={
                 "type": "CANCELED_APPOINTMENT_DUE_TO_PHYSICIAN_DENIAL",
                 "data": {

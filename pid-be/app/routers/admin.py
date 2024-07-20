@@ -71,7 +71,8 @@ async def approve_physician(physician_id: str, uid=Depends(Auth.is_admin)):
         Admin.approve_physician(physician_id)
         physician = Physician.get_by_id(physician_id)
         requests.post(
-            "http://localhost:9000/emails/send",
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-felicitasklix-notifications.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_APPROVED_ACCOUNT",
                 "data": {
@@ -119,7 +120,8 @@ async def deny_physician(physician_id: str, uid=Depends(Auth.is_admin)):
         physician = Physician.get_by_id(physician_id)
         Admin.deny_physician(physician_id)
         requests.post(
-            "http://localhost:9000/emails/send",
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-felicitasklix-notifications.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_DENIED_ACCOUNT",
                 "data": {
@@ -168,7 +170,8 @@ async def unblock_physician(physician_id: str, uid=Depends(Auth.is_admin)):
         physician = Physician.get_blocked_by_id(physician_id)
         Admin.unblock_physician(physician)
         requests.post(
-            "http://localhost:9000/emails/send",
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-felicitasklix-notifications.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_UNBLOCKED_ACCOUNT",
                 "data": {

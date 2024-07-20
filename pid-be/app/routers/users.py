@@ -350,7 +350,8 @@ def change_password(
     if login_response.status_code == 200:
         auth.update_user(uid, **{"password": change_password_request.new_password})
         requests.post(
-            "http://localhost:9000/emails/send",
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-felicitasklix-notifications.onrender.com/emails/send",
             json={
                 "type": "PASSWORD_CHANGED",
                 "data": {
