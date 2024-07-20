@@ -56,8 +56,8 @@ router = APIRouter(
     prefix="/users", tags=["Users"], responses={404: {"description": "Not found"}}
 )
 
-with open("credentials/client.json") as fp:
-    firebase_client_config = json.loads(fp.read())
+# with open("credentials/client.json") as fp:
+#     firebase_client_config = json.loads(fp.read())
 
 
 @router.post(
@@ -93,7 +93,8 @@ async def login_user(
             "password": user_login_request.password,
             "return_secure_token": True,
         },
-        params={"key": firebase_client_config["apiKey"]},
+        # params={"key": firebase_client_config["apiKey"]},
+        params={"key": os.environ.get("API_KEY")},
     )
     if login_response.status_code == 400:
         return JSONResponse(
@@ -148,10 +149,16 @@ async def register(
     url = os.environ.get("REGISTER_URL")
     auth_uid = None
     try:
+        print(f"Fetching user by email: {register_request.email}")
         user = auth.get_user_by_email(register_request.email)
         auth_uid = user.uid
-    except:
-        print("[+] User doesnt exist in authentication")
+        print(f"User found with UID: {auth_uid}")
+    # except:
+    #     print("[+] User doesnt exist in authentication")
+    except auth.UserNotFoundError:
+        print(f"User with email {register_request.email} not found, creating new user.")
+    except Exception as e:
+        print(f"Error fetching user: {e}")
 
     if not auth_uid:
         try:
@@ -189,19 +196,24 @@ async def register(
             **register_request.model_dump(exclude_none=True), id=auth_uid
         )
         physician.create()
-    requests.post(
-        "http://localhost:9000/emails/send",
-        json={
-            "type": "PATIENT_REGISTERED_ACCOUNT"
-            if register_request.role == "patient"
-            else "PHYSICIAN_REGISTERED_ACCOUNT",
-            "data": {
-                "name": register_request.name,
-                "last_name": register_request.last_name,
-                "email": register_request.email,
+    try:
+        response=requests.post(
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-felicitasklix-notifications.onrender.com/emails/send",
+            json={
+                "type": "PATIENT_REGISTERED_ACCOUNT"
+                if register_request.role == "patient"
+                else "PHYSICIAN_REGISTERED_ACCOUNT",
+                "data": {
+                    "name": register_request.name,
+                    "last_name": register_request.last_name,
+                    "email": register_request.email,
+                },
             },
-        },
-    )
+        )
+        response.raise_for_status() 
+    except requests.RequestException as e:
+        print(f"Error al enviar la notificación: {e}")
     return {"message": "Successfull registration"}
 
 
@@ -332,12 +344,14 @@ def change_password(
             "email": user.email,
             "password": change_password_request.current_password,
         },
-        params={"key": firebase_client_config["apiKey"]},
+        # params={"key": firebase_client_config["apiKey"]},
+        params={"key": os.environ.get("API_KEY")},
     )
     if login_response.status_code == 200:
         auth.update_user(uid, **{"password": change_password_request.new_password})
         requests.post(
-            "http://localhost:9000/emails/send",
+            #"http://localhost:9000/emails/send",
+            "https://two023-kmk-felicitasklix-notifications.onrender.com/emails/send",
             json={
                 "type": "PASSWORD_CHANGED",
                 "data": {

@@ -18,8 +18,8 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-with open("credentials/client.json") as fp:
-    firebase_client_config = json.loads(fp.read())
+# with open("credentials/client.json") as fp:
+#     firebase_client_config = json.loads(fp.read())
 
 
 @router.get(
