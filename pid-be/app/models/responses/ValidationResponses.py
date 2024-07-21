@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Union, Dict
 
 from .PhysicianResponses import PhysicianResponse
+from .LabsResponses import LaboratoryResponse
 
 
 class SuccessfullValidationResponse(BaseModel):
@@ -46,4 +47,21 @@ class SuccessfulAdminSpecialtiesGetResponse(BaseModel):
 
 
 class AdminSpecialtiesGetError(BaseModel):
+    detail: str
+
+
+class AllLaboratoriesPendingValidationsResponse(BaseModel):
+    laboratories_to_validate: list[Union[LaboratoryResponse, None]]
+
+class AllApprovedLaboratoriesResponse(BaseModel):
+    appoved_laboratories: list[Union[LaboratoryResponse, None]]
+
+class AllDeniedLaboratoriesResponse(BaseModel):
+    denied_laboratories: list[Union[LaboratoryResponse, None]]
+
+
+class GetApprovedLaboratoriesError(BaseModel):
+    detail: str
+
+class GetDeniedLabsError(BaseModel):
     detail: str

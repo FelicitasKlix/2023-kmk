@@ -23,6 +23,7 @@ const MyRecord = () => {
         blood_type: "",
         id: "",
         observations: [],
+        lab_details: [],
     });
     const inputRef = useRef(null);
     const [showModal, setShowModal] = useState(false);
@@ -65,6 +66,7 @@ const MyRecord = () => {
     };
 
     const handleDeleteClick = (file) => {
+        console.log(file);
         setSelectedFile(file);
         setShowModal(true);
     };
@@ -81,18 +83,6 @@ const MyRecord = () => {
             toast.error("Error al eliminar analisis");
         }
     };
-    
-    // const handleFileDelete = async (id) => {
-    //     try {
-    //         const response = await axios.delete(`${apiURL}analysis/${id}`);
-    //         console.log(response);
-    //         toast.success("Analisis eliminado con exito");
-    //         fetchMyAnalysis();
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Error al eliminar analisis");
-    //     }
-    // };
 
     const resetFileInput = () => {
         inputRef.current.value = null;
@@ -307,7 +297,9 @@ const MyRecord = () => {
                                 </form>
                             </div>
                         </div>
-
+                        <div className={styles["title"]}>
+                                    Observaciones
+                        </div>
                         <div className={styles["records-section"]}>
                             {record.observations.length > 0 ? (
                                 <>
@@ -337,6 +329,11 @@ const MyRecord = () => {
                                                         )}{" "}
                                                         - Médico:{" "}
                                                         {observation.physician}
+                                                        - Especialidad:{" "}
+                                                        {observation.specialty
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        (observation.specialty).slice(1)}
                                                     </div>
                                                     <div
                                                         className={
@@ -357,6 +354,100 @@ const MyRecord = () => {
                             ) : (
                                 <div className={styles["subtitle"]}>
                                     No hay observaciones en esta historia
+                                    clinica
+                                </div>
+                            )}
+                        </div>
+                        <div className={styles["blank"]}></div>
+                        
+                        <div className={styles["title"]}>
+                                    Estudios de Laboratorio
+                        </div>
+                        <div className={styles["records-section"]}>
+                            {record.lab_details.length > 0 ? (
+                                <>
+                                    {record.lab_details.map(
+                                        (lab_record, index) => {
+                                            console.log(lab_record);
+                                            return (
+                                                <div
+                                                    className={
+                                                        styles["record-card"]
+                                                    }
+                                                    key={index}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles[
+                                                                "record-date"
+                                                            ]
+                                                        }
+                                                    >
+                                                        Estudio:{" "}
+                                                        {lab_record.study_title}{" "}
+                                                        - Fecha de solicitud:{" "}
+                                                        {new Date(
+                                                            lab_record.request_date *
+                                                                1000
+                                                        ).toLocaleDateString(
+                                                            "es-AR"
+                                                        )}{" "}
+                                                        - Médico:{" "}
+                                                        {lab_record.physician_name[0] + " " + lab_record.physician_name[1]}
+                                                        {" "}
+                                                        - Laboratorio:{" "}
+                                                        {lab_record.laboratory_name[0] + " - " + lab_record.laboratory_name[1]}
+                                                    </div>
+                                                    <div
+                                                        className={
+                                                            styles[
+                                                                "record-observations"
+                                                            ]
+                                                        }
+                                                    >
+                                                        {
+                                                            lab_record.lab_details.charAt(0).toUpperCase()+(lab_record.lab_details).slice(1)
+                                                            
+                                                        }
+                                                        <p></p>
+                                                        {/* <a href={lab_record.file_url} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                                            Link de descarga del archivo
+                                                        </a> */}
+                                                        {lab_record.files && lab_record.files.length > 0 ? (
+                                                        lab_record.files.map((file, fileIndex) => (
+                                                            <div key={fileIndex}>
+                                                                <a 
+                                                                    href={file.url} 
+                                                                    target="_blank" 
+                                                                    rel="noopener noreferrer" 
+                                                                    style={{ color: 'blue', textDecoration: 'underline' }}
+                                                                >
+                                                                    Link de descarga del archivo {fileIndex + 1}
+                                                                </a>
+                                                            </div>
+                                                        ))
+                                                        ) : lab_record.file_url ? (
+                                                            <a 
+                                                                href={lab_record.file_url} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer" 
+                                                                style={{ color: 'blue', textDecoration: 'underline' }}
+                                                            >
+                                                                Link de descarga del archivo
+                                                            </a>
+                                                        ) : (
+                                                            <p>No hay archivos disponibles</p>
+                                                        )}
+                                                        
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                    )}
+                                </>
+                            ) : (
+                                <div className={styles["subtitle"]}>
+                                    No hay estudios de laboratorio en esta historia
                                     clinica
                                 </div>
                             )}

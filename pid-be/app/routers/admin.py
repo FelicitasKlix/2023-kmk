@@ -7,6 +7,7 @@ from fastapi import APIRouter, status, Depends
 from fastapi.responses import JSONResponse
 
 from app.models.entities.Physician import Physician
+from app.models.entities.Laboratory import Laboratory
 from app.models.entities.Auth import Auth
 from app.models.entities.Admin import Admin
 from app.models.responses.AdminResponses import (
@@ -25,6 +26,11 @@ from app.models.responses.ValidationResponses import (
     GetBlockedPhysiciansError,
     AdminSpecialtiesGetError,
     SuccessfulAdminSpecialtiesGetResponse,
+    AllLaboratoriesPendingValidationsResponse,
+    AllApprovedLaboratoriesResponse,
+    GetApprovedLaboratoriesError,
+    AllDeniedLaboratoriesResponse,
+    GetDeniedLabsError
 )
 
 load_dotenv()
@@ -71,7 +77,7 @@ async def approve_physician(physician_id: str, uid=Depends(Auth.is_admin)):
         Admin.approve_physician(physician_id)
         physician = Physician.get_by_id(physician_id)
         requests.post(
-            "http://localhost:9000/emails/send",
+            "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_APPROVED_ACCOUNT",
                 "data": {
@@ -119,7 +125,7 @@ async def deny_physician(physician_id: str, uid=Depends(Auth.is_admin)):
         physician = Physician.get_by_id(physician_id)
         Admin.deny_physician(physician_id)
         requests.post(
-            "http://localhost:9000/emails/send",
+            "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_DENIED_ACCOUNT",
                 "data": {
@@ -168,7 +174,7 @@ async def unblock_physician(physician_id: str, uid=Depends(Auth.is_admin)):
         physician = Physician.get_blocked_by_id(physician_id)
         Admin.unblock_physician(physician)
         requests.post(
-            "http://localhost:9000/emails/send",
+            "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_UNBLOCKED_ACCOUNT",
                 "data": {
@@ -349,3 +355,239 @@ def regsiter_admin(
 def get_specialties_with_physician_count(uid=Depends(Auth.is_admin)):
     specialies_with_physician_count = Admin.get_specialies_with_physician_count()
     return {"specialties": specialies_with_physician_count}
+
+@router.post(
+    "/approve-laboratory/{laboratory_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=SuccessfullValidationResponse,
+    responses={
+        400: {"model": ValidationErrorResponse},
+        401: {"model": ValidationErrorResponse},
+        403: {"model": ValidationErrorResponse},
+        500: {"model": ValidationErrorResponse},
+    },
+)
+async def approve_laboratory(laboratory_id: str, uid=Depends(Auth.is_admin)):
+    """
+    Validate a laboratory.
+
+    This will allow superusers to approve laboratories.
+
+    This path operation will:
+
+    * Validate a laboratory.
+    * Change the _approved_ field from Laboratory from _pending_ to _approved_.
+    * Throw an error if the validation fails.
+    """
+    try:
+        if not Laboratory.is_laboratory(laboratory_id):
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"detail": "Can only approve laboratories"},
+            )
+        Admin.approve_laboratory(laboratory_id)
+        lab = Laboratory.get_by_id(laboratory_id)
+        requests.post(
+            "https://two023-kmk-45yo.onrender.com/emails/send",
+            json={
+                "type": "APPROVED_LABORATORY",
+                "data": {
+                    "email": lab["email"],
+                },
+            },
+        )
+        return {"message": "Laboratory validated successfully"}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+
+@router.get(
+    "/laboratories-pending",
+    status_code=status.HTTP_200_OK,
+    response_model=AllLaboratoriesPendingValidationsResponse,
+    responses={
+        401: {"model": GetDeniedLabsError},
+        403: {"model": GetDeniedLabsError},
+        500: {"model": GetDeniedLabsError},
+    },
+)
+def get_all_laboratories_pending_validations(uid=Depends(Auth.is_admin)):
+    """
+    Get all laboratories pending approval.
+
+    This will allow superusers to retrieve all pending validations.
+
+    This path operation will:
+
+    * Return all of laboratories pending validations.
+    * Throw an error if appointment retrieving fails.
+    """
+    try:
+        laboratories_to_validate = Laboratory.get_pending_labs()
+        return {"laboratories_to_validate": laboratories_to_validate}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+
+@router.post(
+    "/deny-laboratory/{laboratory_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=SuccessfullValidationResponse,
+    responses={
+        400: {"model": ValidationErrorResponse},
+        401: {"model": ValidationErrorResponse},
+        403: {"model": ValidationErrorResponse},
+        500: {"model": ValidationErrorResponse},
+    },
+)
+async def deny_laboratory(laboratory_id: str, uid=Depends(Auth.is_admin)):
+    """
+    Validate a laboratory.
+
+    This will allow superusers to deny laboratories.
+
+    This path operation will:
+
+    * Validate a laboratory.
+    * Change the _approved_ field from Laboratory from _pending_ to _denied_.
+    * Throw an error if the validation fails.
+    """
+    try:
+        if not Laboratory.is_laboratory(laboratory_id):
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"detail": "Can only deny laboratories"},
+            )
+        lab = Laboratory.get_by_id(laboratory_id)
+        Admin.deny_laboratory(laboratory_id)
+        requests.post(
+            "https://two023-kmk-45yo.onrender.com/emails/send",
+            json={
+                "type": "PHYSICIAN_DENIED_ACCOUNT",
+                "data": {
+                    "email": lab["email"],
+                },
+            },
+        )
+        return {"message": "Laboratory denied successfully"}
+    except Exception as e:
+        print(e)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+@router.get(
+    "/labs-working",
+    status_code=status.HTTP_200_OK,
+    response_model=AllApprovedLaboratoriesResponse,
+    responses={
+        401: {"model": GetApprovedLaboratoriesError},
+        403: {"model": GetApprovedLaboratoriesError},
+        500: {"model": GetApprovedLaboratoriesError},
+    },
+)
+def get_all_working_labs(uid=Depends(Auth.is_admin)):
+    """
+    Get all working labs.
+
+    This will allow superusers to retrieve all working labs.
+
+    This path operation will:
+
+    * Return all of the working labs.
+    * Throw an error if appointment retrieving fails.
+    """
+    try:
+        labs_working = Laboratory.get_approved_labs()
+        return {"appoved_laboratories": labs_working}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+@router.get(
+    "/labs-blocked",
+    status_code=status.HTTP_200_OK,
+    response_model=AllDeniedLaboratoriesResponse,
+    responses={
+        401: {"model": GetApprovedLaboratoriesError},
+        403: {"model": GetApprovedLaboratoriesError},
+        500: {"model": GetApprovedLaboratoriesError},
+    },
+)
+def get_all_blocked_labs(uid=Depends(Auth.is_admin)):
+    """
+    Get all blocked labs.
+
+    This will allow superusers to retrieve all blocked labs.
+
+    This path operation will:
+
+    * Return all of the blocked labs.
+    * Throw an error if appointment retrieving fails.
+    """
+    try:
+        denied_labs = Laboratory.get_denied_labs()
+        return {"denied_laboratories": denied_labs}
+    except:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )
+    
+
+@router.post(
+    "/unblock-lab/{lab_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=SuccessfullValidationResponse,
+    responses={
+        400: {"model": ValidationErrorResponse},
+        401: {"model": ValidationErrorResponse},
+        403: {"model": ValidationErrorResponse},
+        500: {"model": ValidationErrorResponse},
+    },
+)
+async def unblock_laboratory(lab_id: str, uid=Depends(Auth.is_admin)):
+    """
+    Validate a laboratory.
+
+    This will allow superusers to unblock blocked labs.
+
+    This path operation will:
+
+    * Validate a physician.
+    * Change the _approved_ field from Laboratory from _denied_ to _pending_.
+    * Throw an error if the validation fails.
+    """
+    try:
+        if not Laboratory.is_blocked_laboratory(lab_id):
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"detail": "Can only unblock blocked labs"},
+            )
+        laboratory = Laboratory.get_blocked_by_id(lab_id)
+        Admin.unblock_lab(laboratory)
+        requests.post(
+            "https://two023-kmk-45yo.onrender.com/emails/send",
+            json={
+                "type": "PHYSICIAN_UNBLOCKED_ACCOUNT",
+                "data": {
+                    "email": laboratory["email"],
+                },
+            },
+        )
+        return {"message": "Physician unblocked successfully"}
+    except Exception as e:
+        print(e)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal server error"},
+        )

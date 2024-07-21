@@ -8,7 +8,7 @@ from app.models.entities.Auth import Auth
 from app.models.entities.Record import Record
 from app.models.responses.RecordResponses import (
     GetRecordResponse,
-    GetRecordError,
+    GetRecordError
 )
 from app.models.requests.ObservationRequest import (
     ObservationRequest,
@@ -74,7 +74,6 @@ def get_my_record(patient_id=Depends(Auth.is_logged_in)):
     * Throw an error if recrods retrieving fails.
     """
     try:
-        print(patient_id)
         record = Record.get_by_id(patient_id)
         print(record)
         return {"record": record}

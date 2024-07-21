@@ -24,6 +24,7 @@ const MedicalRecords = ({ searchParams }) => {
         blood_type: "",
         id: "",
         observations: [],
+        lab_details: [],
     });
     const [analysis, setAnalysis] = useState([]);
 
@@ -307,7 +308,10 @@ const MedicalRecords = ({ searchParams }) => {
                                     )}
                                 </div>
                             </div>
-
+                            <div className={styles["title"]}></div>
+                            <div className={styles["title"]}>
+                                    Observaciones
+                            </div>
                             <div className={styles["records-section"]}>
                                 {record.observations.length > 0 ? (
                                     <>
@@ -349,7 +353,7 @@ const MedicalRecords = ({ searchParams }) => {
                                                             }
                                                         >
                                                             {
-                                                                observation.observation
+                                                                (observation.observation).charAt(0).toUpperCase()+(observation.observation).slice(1)
                                                             }
                                                         </div>
                                                     </div>
@@ -364,6 +368,85 @@ const MedicalRecords = ({ searchParams }) => {
                                     </div>
                                 )}
                             </div>
+                            <div className={styles["title"]}></div>
+                            <div className={styles["title"]}>
+                                    Estudios de Laboratorio
+                            </div>
+                            <div className={styles["records-section"]}>
+                            {record.lab_details.length > 0 ? (
+                                <>
+                                    {record.lab_details.map(
+                                        (lab_record, index) => {
+                                            console.log(lab_record);
+                                            return (
+                                                <div
+                                                    className={
+                                                        styles["record-card"]
+                                                    }
+                                                    key={index}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles[
+                                                                "record-date"
+                                                            ]
+                                                        }
+                                                    >
+                                                        Estudio:{" "}
+                                                        {lab_record.study_title}
+                                                    </div>
+                                                    <div
+                                                        className={
+                                                            styles[
+                                                                "record-observations"
+                                                            ]
+                                                        }
+                                                    >
+                                                        {
+                                                            (lab_record.lab_details).charAt(0).toUpperCase() + (lab_record.lab_details).slice(1)
+                                                        }
+                                                        <p></p>
+                                                        {/* <a href={lab_record.file_url} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                                            Link de descarga del archivo
+                                                        </a> */}
+                                                        {lab_record.files && lab_record.files.length > 0 ? (
+                                                        lab_record.files.map((file, fileIndex) => (
+                                                            <div key={fileIndex}>
+                                                                <a 
+                                                                    href={file.url} 
+                                                                    target="_blank" 
+                                                                    rel="noopener noreferrer" 
+                                                                    style={{ color: 'blue', textDecoration: 'underline' }}
+                                                                >
+                                                                    Link de descarga del archivo {fileIndex + 1}
+                                                                </a>
+                                                            </div>
+                                                        ))
+                                                    ) : lab_record.file_url ? (
+                                                        <a 
+                                                            href={lab_record.file_url} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer" 
+                                                            style={{ color: 'blue', textDecoration: 'underline' }}
+                                                        >
+                                                            Link de descarga del archivo
+                                                        </a>
+                                                    ) : (
+                                                        <p>No hay archivos disponibles</p>
+                                                    )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                    )}
+                                </>
+                            ) : (
+                                <div className={styles["subtitle"]}>
+                                    No hay estudios de laboratorio en esta historia
+                                    clinica
+                                </div>
+                            )}
+                        </div>
                         </div>
                     </div>
 

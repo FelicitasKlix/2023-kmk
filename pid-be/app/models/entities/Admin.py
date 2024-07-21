@@ -4,6 +4,7 @@ from firebase_admin import firestore
 from app.models.entities.Physician import Physician
 from app.models.entities.Appointment import Appointment
 from app.models.entities.Specialty import Specialty
+from app.models.entities.Laboratory import Laboratory
 
 db = firestore.client()
 
@@ -37,6 +38,10 @@ class Admin:
         db.collection("physicians").document(id).update({"approved": "approved"})
 
     @staticmethod
+    def approve_laboratory(id):
+        db.collection("laboratories").document(id).update({"approved": "approved"})
+
+    @staticmethod
     def cancel_appointments_for_physician(physician_id):
         appointments_for_physician = (
             db.collection("appointments")
@@ -56,6 +61,13 @@ class Admin:
         Admin.delete_physician(id)
 
     @staticmethod
+    def deny_laboratory(id):
+        denied_laboratory = Laboratory.get_by_id(id)
+        db.collection("deniedLaboratories").document(id).set(denied_laboratory)
+        db.collection("deniedLaboratories").document(id).update({"approved": "denied"})
+        Admin.delete_laboratory(id)
+
+    @staticmethod
     def unblock_physician(denied_physician):
         db.collection("physicians").document(denied_physician["id"]).set(
             {**denied_physician, "approved": "approved"}
@@ -63,8 +75,19 @@ class Admin:
         db.collection("deniedPhysicians").document(denied_physician["id"]).delete()
 
     @staticmethod
+    def unblock_lab(denied_laboratory):
+        db.collection("laboratories").document(denied_laboratory["id"]).set(
+            {**denied_laboratory, "approved": "approved"}
+        )
+        db.collection("deniedLaboratories").document(denied_laboratory["id"]).delete()
+
+    @staticmethod
     def delete_physician(id):
         db.collection("physicians").document(id).delete()
+
+    @staticmethod
+    def delete_laboratory(id):
+        db.collection("laboratories").document(id).delete()
 
     @staticmethod
     def get_specialies_with_physician_count():

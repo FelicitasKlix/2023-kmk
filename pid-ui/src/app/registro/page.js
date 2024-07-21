@@ -30,6 +30,8 @@ const Registro = () => {
     const [disabledRegisterButton, setDisabledRegisterButton] = useState(false);
     const router = useRouter();
     const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // At request level
     const agent = new https.Agent({
@@ -52,6 +54,14 @@ const Registro = () => {
                 "La contraseña no es lo suficientemente fuerte: debe incluir al menos 8 caracteres, 1 minúscula, 1 mayúscula y 1 número"
             );
         }
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+      };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
     };
 
     const fetchSpecialties = async () => {
@@ -163,10 +173,13 @@ const Registro = () => {
                     >
                         <option value='patient'>Paciente</option>
                         <option value='physician'>Médico</option>
+                        <option value='laboratory'>Laboratorio</option>
                     </select>
                 </div>
+                
+                {/* Campos comunes para todos los roles */}
                 <div className={styles["form-group"]}>
-                    <label htmlFor='nombre'>Nombre</label>
+                    <label htmlFor='nombre'>{role === 'laboratory' ? 'Nombre del Laboratorio' : 'Nombre'}</label>
                     <input
                         type='text'
                         id='nombre'
@@ -175,16 +188,33 @@ const Registro = () => {
                         required
                     />
                 </div>
-                <div className={styles["form-group"]}>
-                    <label htmlFor='apellido'>Apellido</label>
-                    <input
-                        type='text'
-                        id='apellido'
-                        value={apellido}
-                        onChange={(e) => setApellido(e.target.value)}
-                        required
-                    />
-                </div>
+                
+                {role !== 'laboratory' && (
+                    <div className={styles["form-group"]}>
+                        <label htmlFor='apellido'>Apellido</label>
+                        <input
+                            type='text'
+                            id='apellido'
+                            value={apellido}
+                            onChange={(e) => setApellido(e.target.value)}
+                            required
+                        />
+                    </div>
+                )}
+                
+                {role === 'laboratory' && (
+                    <div className={styles["form-group"]}>
+                        <label htmlFor='apellido'>Dirección</label>
+                        <input
+                            type='text'
+                            id='apellido'
+                            value={apellido}
+                            onChange={(e) => setApellido(e.target.value)}
+                            required
+                        />
+                    </div>
+                )}
+                
                 <div className={styles["form-group"]}>
                     <label htmlFor='email'>Correo Electrónico</label>
                     <input
@@ -195,6 +225,8 @@ const Registro = () => {
                         required
                     />
                 </div>
+                
+                {/* Campos específicos para médicos */}
                 {role === "physician" && (
                     <>
                         <div className={styles["form-group"]}>
@@ -205,9 +237,7 @@ const Registro = () => {
                                 type='text'
                                 id='numeroMatricula'
                                 value={numeroMatricula}
-                                onChange={(e) =>
-                                    setNumeroMatricula(e.target.value)
-                                }
+                                onChange={(e) => setNumeroMatricula(e.target.value)}
                                 required
                             />
                         </div>
@@ -234,6 +264,8 @@ const Registro = () => {
                         </div>
                     </>
                 )}
+                
+                {/* Campos específicos para pacientes */}
                 {role === "patient" && (
                     <>
                         <div className={styles["form-group"]}>
@@ -288,32 +320,61 @@ const Registro = () => {
                         </div>
                     </>
                 )}
+                
+                {/* Campos de contraseña para todos los roles */}
                 <div className={styles["form-group"]}>
                     <label htmlFor='password'>Contraseña</label>
-                    <input
-                        type='password'
-                        id='password'
-                        value={password}
-                        onChange={(e) => {
-                            setPassword(e.target.value);
-                            validate(e.target.value);
-                        }}
-                        required
-                    />
+                    <div className={styles["password-input-container"]}>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            id='password'
+                            value={password}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                validate(e.target.value);
+                            }}
+                            required
+                        />
+                        <button
+                            type="button"
+                            className={styles["toggle-view-password-button"]}
+                            onClick={togglePasswordVisibility}
+                        >
+                            <img
+                                src={showPassword ? "/eye-closed.png" : "/eye-opened.png"}
+                                alt={showPassword ? 'Locked' : 'Eye'}
+                                style={{ width: '40px', height: '33px' }}
+                            />
+                        </button>
+                    </div>
                 </div>
                 <div className={styles["form-group"]}>
                     <label htmlFor='confirmPassword'>Repetir Contraseña</label>
-                    <input
-                        type='password'
-                        id='confirmPassword'
-                        value={confirmPassword}
-                        onChange={(e) => {
-                            setConfirmPassword(e.target.value);
-                            validate(e.target.value);
-                        }}
-                        required
-                    />
+                    <div className={styles["password-input-container"]}>
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            id='confirmPassword'
+                            value={confirmPassword}
+                            onChange={(e) => {
+                                setConfirmPassword(e.target.value);
+                                validate(e.target.value);
+                            }}
+                            required
+                        />
+                        <button
+                            type="button"
+                            className={styles["toggle-view-password-button"]}
+                            onClick={toggleConfirmPasswordVisibility}
+                        >
+                            <img
+                                src={showConfirmPassword ? "/eye-closed.png" : "/eye-opened.png"}
+                                alt={showConfirmPassword ? 'Locked' : 'Eye'}
+                                style={{ width: '40px', height: '33px' }}
+                            />
+                        </button>
+                    </div>
                 </div>
+                
                 {error && (
                     <div className={styles["error-message"]}>{error}</div>
                 )}
@@ -339,7 +400,7 @@ const Registro = () => {
                 >
                     Registrarse
                 </button>
-            </form>
+        </form>
             <div className={styles["sign-in-link"]}>
                 <Link legacyBehavior href='/'>
                     <a>¿Ya tienes una cuenta? Inicia Sesión</a>

@@ -55,6 +55,21 @@ class PhysicianRegisterRequest(BaseModel):
             raise ValueError("Invalid password format")
         return password_to_validate
 
+class LaboratoryRegisterRequest(BaseModel):
+    role: Literal["laboratory"] = "laboratory"
+    name: str = Field(min_length=1)
+    last_name: str = Field(min_length=1)
+    email: Annotated[str, Query(pattern="^[-\w\.]+@([-\w]+\.)+[-\w]{2,4}$")]
+    password: str = Field(
+        min_length=8,
+        description="Must contain at least one uppercase, at least one lowercase and at least one number",
+    )
+
+    @field_validator("password")
+    def validate_password(cls, password_to_validate):
+        if not re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)", password_to_validate):
+            raise ValueError("Invalid password format")
+        return password_to_validate
 
 class ChangePasswordRequest(BaseModel):
     current_password: str

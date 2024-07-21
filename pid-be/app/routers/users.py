@@ -12,6 +12,7 @@ from app.models.requests.UserRequests import (
     PatientRegisterRequest,
     PhysicianRegisterRequest,
     ChangePasswordRequest,
+    LaboratoryRegisterRequest
 )
 from app.models.responses.UserResponses import (
     SuccessfulLoginResponse,
@@ -45,6 +46,7 @@ from app.models.entities.Admin import Admin
 from app.models.entities.Record import Record
 from app.models.entities.Score import Score
 from app.models.entities.Appointment import Appointment
+from app.models.entities.Laboratory import Laboratory
 
 from firebase_admin import firestore, auth
 
@@ -113,6 +115,18 @@ async def login_user(
                     status_code=status.HTTP_403_FORBIDDEN,
                     content={"detail": "Account has to be approved by admin"},
                 )
+        elif Laboratory.is_laboratory(login_response.json()["localId"]):
+            laboratory = Laboratory.get_by_id(login_response.json()["localId"])
+            if laboratory["approved"] == "denied" or laboratory["approved"] == "blocked":
+                return JSONResponse(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    content={"detail": "Account is not approved"},
+                )
+            elif laboratory["approved"] == "pending":
+                return JSONResponse(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    content={"detail": "Account has to be approved by admin"},
+                )
         return {"token": login_response.json()["idToken"]}
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -132,7 +146,7 @@ async def login_user(
 )
 async def register(
     register_request: Annotated[
-        Union[PatientRegisterRequest, PhysicianRegisterRequest],
+        Union[PatientRegisterRequest, PhysicianRegisterRequest, LaboratoryRegisterRequest],
         Body(discriminator="role"),
     ]
 ):
@@ -184,17 +198,25 @@ async def register(
         }
         record = Record(**record_data, id=auth_uid)
         record.create()
-    else:
+        email_type = "PATIENT_REGISTERED_ACCOUNT"
+    elif register_request.role == "physician":
         physician = Physician(
             **register_request.model_dump(exclude_none=True), id=auth_uid
         )
         physician.create()
+        email_type = "PHYSICIAN_REGISTERED_ACCOUNT"
+    elif register_request.role == "laboratory":
+        print(register_request)
+        laboratory = Laboratory(
+            **register_request.model_dump(exclude_none=True), id=auth_uid
+        )
+        print(laboratory)
+        laboratory.create()
+        email_type = "LABORATORY_REGISTERED_ACCOUNT"
     requests.post(
-        "http://localhost:9000/emails/send",
+        "https://two023-kmk-45yo.onrender.com/emails/send",
         json={
-            "type": "PATIENT_REGISTERED_ACCOUNT"
-            if register_request.role == "patient"
-            else "PHYSICIAN_REGISTERED_ACCOUNT",
+            "type": email_type,
             "data": {
                 "name": register_request.name,
                 "last_name": register_request.last_name,
@@ -234,6 +256,8 @@ def get_user_roles(user_id=Depends(Auth.is_logged_in)):
             roles.append("patient")
         if Physician.is_physician(user_id):
             roles.append("physician")
+        if Laboratory.is_laboratory(user_id):
+            roles.append("laboratory")
         return {"roles": roles}
     except:
         return JSONResponse(
@@ -268,6 +292,8 @@ def get_user_info(user_id=Depends(Auth.is_logged_in)):
             return Patient.get_by_id(user_id)
         if Physician.get_by_id(user_id):
             return Physician.get_by_id(user_id)
+        if Laboratory.get_by_id(user_id):
+            return Laboratory.get_by_id(user_id)
         else:
             return JSONResponse(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -337,7 +363,7 @@ def change_password(
     if login_response.status_code == 200:
         auth.update_user(uid, **{"password": change_password_request.new_password})
         requests.post(
-            "http://localhost:9000/emails/send",
+            "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "PASSWORD_CHANGED",
                 "data": {
@@ -375,10 +401,11 @@ def add_score(add_score_request: LoadScoreRequest, uid=Depends(Auth.is_logged_in
     add_score_request = add_score_request.model_dump(exclude_none=True)
     appointment_id = add_score_request.pop("appointment_id")
     try:
+        print(add_score_request)
+        print(appointment_id)
         if Patient.get_by_id(uid):
             Score.add_physician_score(add_score_request, appointment_id)
             Appointment.update_rated_status(appointment_id)
-            Appointment.remove_pending_to_score_patient_register(uid, appointment_id)
             return {"message": "Scores added successfully"}
         if Physician.get_by_id(uid):
             Score.add_patient_score(add_score_request, appointment_id)
@@ -405,7 +432,7 @@ def add_score(add_score_request: LoadScoreRequest, uid=Depends(Auth.is_logged_in
 )
 def show_score(
     user_id: str,
-    # uid=Depends(Auth.is_logged_in)
+    uid=Depends(Auth.is_logged_in)
 ):
     """
     Show scores from a physician.
@@ -419,9 +446,10 @@ def show_score(
     """
     try:
         if Patient.is_patient(user_id):
-            appointments = Appointment.get_all_closed_appointments_for_patient_with(
+            appointments = Appointment.get_all_rated_appointments_for_patient_with(
                 user_id
             )
+            print(appointments)
             score_sums = {
                 "puntuality": 0,
                 "communication": 0,

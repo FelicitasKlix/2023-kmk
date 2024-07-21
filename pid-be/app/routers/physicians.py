@@ -96,7 +96,7 @@ async def approve_appointment(appointment_id: str, uid=Depends(Auth.is_logged_in
         physician = Physician.get_by_id(appointment.physician_id)
         date = datetime.fromtimestamp(appointment.date)
         requests.post(
-            "http://localhost:9000/emails/send",
+            "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "APPROVED_APPOINTMENT"
                 if not appointment.updated_at

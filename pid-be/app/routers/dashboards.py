@@ -48,7 +48,7 @@ def get_admin_dashboard(uid=Depends(Auth.is_admin)):
         all_appointments_per_specialty = (
             MetricParserHelper.filter_appointments_per_specialty(all_appointments)
         )
-        # updated_appointments = len(Appointment.get_all_appointments_updtated())
+        
         return {
             "dashboard_metrics": {
                 "all_appointments_by_specialty": all_appointments_per_specialty

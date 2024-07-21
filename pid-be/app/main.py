@@ -27,6 +27,8 @@ from app.routers import (
     bloodTypes,
     analysis,
     dashboards,
+    studies,
+    labs,
 )
 from app.models.entities.Auth import Auth
 
@@ -51,6 +53,8 @@ routers = [
     bloodTypes.router,
     analysis.router,
     dashboards.router,
+    studies.router,
+    labs.router,
 ]
 
 for router in routers:

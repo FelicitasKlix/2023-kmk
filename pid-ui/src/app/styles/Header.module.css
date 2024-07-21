@@ -7,11 +7,12 @@
     top: 0; /* Pega el encabezado al borde superior */
     left: 0; /* Alinea el encabezado a la izquierda */
     right: 0; /* Alinea el encabezado a la derecha */
-    z-index: 999; /* Ajusta el valor de z-index para superponer sobre el contenido */
+    /* z-index: 999; Ajusta el valor de z-index para superponer sobre el contenido */
     display: flex; /* Activa el diseño flexible para centrar el contenido verticalmente */
     justify-content: center; /* Centra el contenido horizontalmente */
     align-items: center; /* Centra el contenido verticalmente */
     height: 100px; /* Fija una altura fija para el encabezado */
+    z-index: 999;
 }
 
 /* Estilos para el logo */
@@ -83,7 +84,9 @@
     width: 100%;
     padding: 2rem;
     box-shadow: inset 0 -10px 10px -10px rgba(0, 0, 0, 0.1);
-    z-index: 1;
+    /* Ajusta el valor de z-index para superponer sobre el contenido */
+    z-index: 999;
+    /* z-index: 1; */
 }
 
 /* Estilos para las pestañas */

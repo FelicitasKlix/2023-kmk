@@ -28,6 +28,12 @@ const PhysicianAgenda = () => {
     const [appointmentIdToDelete, setAppointmentIdToDelete] = useState(null);
     const [disabledCloseAppointmentButton, setDisabledCloseAppointmentButton] =
         useState(false);
+    const [studies, setStudies] = useState([]);
+    const [study, setStudy] = useState("");
+    const [labs, setLabs] = useState([]);
+    const [lab, setLab] = useState("");
+    const [detail, setNewDetailContent] = useState("");
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
 
     const [reviews, setReviews] = useState({
         puntuality: {
@@ -56,6 +62,13 @@ const PhysicianAgenda = () => {
         rejectUnauthorized: false,
     });
 
+    const ratingModalStyles = {
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1000 // Un valor mayor que el z-index del header
+        },
+    };
+
     const fetchAppointments = async () => {
         try {
             const response = await axios.get(
@@ -77,6 +90,14 @@ const PhysicianAgenda = () => {
         setIsAddObervationModalOpen(true);
         setAppointmentToClose(appointment);
         setPatientId(appointment.patient.id);
+    };
+
+    const areAllFieldsValid = () => {
+        const areReviewsComplete = Object.values(reviews).every(review => review.rating >= 0);
+        const isAppointmentInfoComplete = appointmentAttended && startTime && newObservationContent;
+        const isStudyRequestValid = !study || (study && lab); // Si hay estudio seleccionado, debe haber laboratorio
+    
+        return areReviewsComplete && isAppointmentInfoComplete && isStudyRequestValid;
     };
 
     const handleAppointmentClosure = async () => {
@@ -107,6 +128,27 @@ const PhysicianAgenda = () => {
             console.error(error);
         }
 
+        if (study && lab){
+            try{
+                const response = await axios.post(
+                    `${apiURL}studies/request`,
+                    {
+                        title: study,
+                        appointment_id: appointmentToClose.id,
+                        laboratory_id: lab,
+                        details: detail
+                    },
+                    {
+                        httpsAgent: agent,
+                    }
+                );
+                toast.success("Estudio solicitado exitosamente");
+            } catch(error){
+                console.error(error);
+                toast.error("Error al solicitar estudio");
+            }
+        }
+
         try {
             const response = await axios.post(
                 `${apiURL}records/update`,
@@ -120,7 +162,7 @@ const PhysicianAgenda = () => {
                     httpsAgent: agent,
                 }
             );
-            toast.info("Turno cerrado exitosamente");
+            toast.success("Turno cerrado exitosamente");
             fetchAppointments();
             setIsAddObervationModalOpen(false);
         } catch (error) {
@@ -144,7 +186,7 @@ const PhysicianAgenda = () => {
                     httpsAgent: agent,
                 }
             );
-            toast.info("Puntaje cargado exitosamente");
+            toast.success("Puntaje cargado exitosamente");
         } catch (error) {
             toast.error("Error al agregar la puntaje");
             console.error(error);
@@ -174,6 +216,26 @@ const PhysicianAgenda = () => {
             console.error(error);
             toast.error("Error al eliminar turno");
         }
+    };
+
+    const fetchStudies = async () => {
+        const response = await axios.get(`${apiURL}studies`, {
+            httpsAgent: agent,
+        });
+        console.log(response.data.studies);
+        response.data.studies == undefined
+            ? setStudies([])
+            : setStudies(response.data.studies);
+    };
+
+    const fetchLabs = async () => {
+        const response = await axios.get(`${apiURL}labs/approved-laboratories`, {
+            httpsAgent: agent,
+        });
+        console.log(response.data);
+        response.data.appoved_laboratories == undefined
+            ? setLabs([])
+            : setLabs(response.data.appoved_laboratories);
     };
 
     const MODAL_STYLES = {
@@ -212,8 +274,11 @@ const PhysicianAgenda = () => {
         fetchAppointments()
             .then(() => setIsLoading(false)) // Marcar como cargado cuando la respuesta llega
             .catch(() => {
-                setIsLoading(false); // Asegúrate de marcar como cargado en caso de error
+                setIsLoading(false);
             });
+
+        fetchStudies();
+        fetchLabs();
     }, []);
 
     return (
@@ -223,7 +288,7 @@ const PhysicianAgenda = () => {
                     ariaHideApp={false}
                     isOpen={isAddObservationModalOpen}
                     onRequestClose={handleCloseEditModal}
-                    // style={customStyles}
+                    style={ratingModalStyles}
                 >
                     <div
                         className={styles["new-record-section"]}
@@ -281,6 +346,84 @@ const PhysicianAgenda = () => {
                                 }}
                                 placeholder='Escribe una nueva observación'
                                 required
+                                className={`${styles["observation-input"]} ${
+                                    appointmentAttended === "false"
+                                        ? styles["disabled-input"]
+                                        : ""
+                                }`}
+                                wrap='soft'
+                                disabled={appointmentAttended == "false"}
+                            />
+                        </div>
+                        </div>
+                        
+                        <div
+                        className={styles["studies-request-section"]}
+                        //onSubmit={handleStudiesRequest}
+                    >
+                        <div className={styles["title"]}>Laboratorios</div>
+                        <div className={styles["appointment"]}>
+                            <div className={styles["subtitle"]}>
+                                Seleccione un estudio:
+                            </div>
+                            <select
+                                className={styles["select"]}
+                                //name='study'
+                                id='study'
+                                value={study}
+                                required
+                                onChange={(e) => {
+                                    console.log(e.target.value);
+                                    setStudy(e.target.value);
+                                }}
+                            >
+                                <option value=''>Selecciona un estudio</option>
+                                {studies.map((study) => (
+                                    <option key={study} value={study}>
+                                        {study
+                                            .charAt(0)
+                                            .toUpperCase() +
+                                            study.slice(1)}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <div className={styles["subtitle"]}>
+                                Seleccione un laboratorio:{" "}
+                            </div>
+                            <select
+                                className={styles["select"]}
+                                //name='study'
+                                id='laboratorio'
+                                value={lab}
+                                //required
+                                onChange={(e) => {
+                                    console.log(e.target.value);
+                                    setLab(e.target.value);
+                                }}
+                                disabled={!study}
+                            >
+                                <option value=''>Selecciona un laboratorio</option>
+                                {labs.map((lab) => (
+                                    <option key={lab.id} value={lab.id}>
+                                        {lab.first_name}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <div className={styles["subtitle"]}>
+                                Detalle
+                            </div>
+
+                            <textarea
+                                id='detalle'
+                                value={detail}
+                                onChange={(e) => {
+                                    console.log(e.target.value);
+                                    setNewDetailContent(e.target.value);
+                                }}
+                                placeholder='Escribe un detalle del estudio'
+                                //required
                                 className={`${styles["observation-input"]} ${
                                     appointmentAttended === "false"
                                         ? styles["disabled-input"]
@@ -385,20 +528,15 @@ const PhysicianAgenda = () => {
 
                         <button
                             className={`${styles["edit-button"]} ${
-                                !newObservationContent ||
-                                !startTime ||
-                                disabledCloseAppointmentButton
+                                !areAllFieldsValid() || disabledCloseAppointmentButton
                                     ? styles["disabled-button"]
                                     : ""
                             }`}
                             onClick={handleAppointmentClosure}
-                            disabled={
-                                !newObservationContent ||
-                                !startTime ||
-                                disabledCloseAppointmentButton
-                            }
+                            disabled={!areAllFieldsValid() || disabledCloseAppointmentButton}
                         >
-                            Agregar
+                            {disabledCloseAppointmentButton ? "Procesando..." : "Agregar"}
+                            
                         </button>
                     </div>
                 </Modal>

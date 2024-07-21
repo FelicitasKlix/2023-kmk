@@ -33,13 +33,24 @@ class Patient:
     @staticmethod
     def is_patient(id):
         return db.collection("patients").document(id).get().exists
+    
+    @staticmethod
+    def get_first_and_last_name(id):
+        return db.collection("patients").document(id).get().to_dict()["first_name"], db.collection("patients").document(id).get().to_dict()["last_name"]
+    
+    @staticmethod
+    def get_email(id):
+        return db.collection("patients").document(id).get().to_dict()["email"]
 
     @staticmethod
     def has_pending_scores(id):
         pending_scores_doc = db.collection("patientsPendingToScore").document(id).get()
         if not pending_scores_doc.exists:
             return False
-        return len(pending_scores_doc.to_dict()) > 0
+        appts = db.collection("appointments").where("patient_id", "==", id).where("status", "==", "closed").get()
+        print(len(appts)>0)
+        print(pending_scores_doc.to_dict())
+        return len(appts) > 0
 
     def create(self):
         if db.collection("patients").document(self.id).get().exists:

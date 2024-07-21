@@ -12,6 +12,7 @@ import { Footer, Header, TabBar } from "../../components/header";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { add } from "date-fns";
+import {ToastContainer} from "react-toastify"
 
 const DashboardPatient = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +77,12 @@ const DashboardPatient = () => {
 
     const handleOpenReviewModal = (appointment) => {
         setAppointmentToReview(appointment);
+        console.log("TURNO SELECCIONADO: ",appointment);
         setIsAddObervationModalOpen(true);
+    };
+
+    const areAllReviewsCompleted = () => {
+        return Object.values(reviews).every(review => review.rating >= 0);
     };
 
     const handleCloseReviewModal = () => {
@@ -91,6 +97,7 @@ const DashboardPatient = () => {
                 if (reviews[review].rating >= 0)
                     reviewsToSend[review] = reviews[review].rating;
             });
+            console.log("REVIEWS TO SEND: ",reviewsToSend);
             const response = await axios.post(
                 `${apiURL}users/add-score`,
                 { ...reviewsToSend, appointment_id: appointmentToReview.id },
@@ -98,9 +105,12 @@ const DashboardPatient = () => {
                     httpsAgent: agent,
                 }
             );
-            toast.info("Puntaje cargado exitosamente");
-            await delay(5000);
+            toast.success("Puntaje cargado exitosamente");
+            //await delay(5000);
             fetchPendingReviews();
+            
+            setIsAddObervationModalOpen(false);
+            
         } catch (error) {
             toast.error("Error al agregar la puntaje");
             console.error(error);
@@ -117,6 +127,10 @@ const DashboardPatient = () => {
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
             width: "80%",
+        },
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1000 // Un valor mayor que el z-index del header
         },
     };
 
@@ -136,7 +150,8 @@ const DashboardPatient = () => {
                     onRequestClose={handleCloseReviewModal}
                     style={ratingModalStyles}
                 >
-                    <div className={styles["new-record-section"]}>
+                    <div className={styles["new-record-section"]}
+                    onSubmit={addReview}>
                         <div className={styles["title"]}>Carga de Reseña</div>
 
                         <div
@@ -233,19 +248,30 @@ const DashboardPatient = () => {
 
                         <button
                             className={`${styles["edit-button"]} ${
-                                disabledAddReviewButton
+                                !areAllReviewsCompleted() || disabledAddReviewButton
                                     ? styles["disabled-button"]
                                     : ""
                             }`}
                             onClick={addReview}
-                            disabled={disabledAddReviewButton}
+                            disabled={!areAllReviewsCompleted() || disabledAddReviewButton}
                         >
-                            Agregar
+                            {disabledAddReviewButton ? "Procesando..." : "Agregar"}
                         </button>
                     </div>
                 </Modal>
             )}
-
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                style={{ zIndex: 10000 }} // Un z-index mayor que el del modal
+            />
             <div className={styles.dashboard}>
                 <TabBar highlight='Turnos' />
 
@@ -261,8 +287,8 @@ const DashboardPatient = () => {
                                     Turnos pendientes de reseña
                                 </div>
                                 <div className={styles["subtitle"]}>
-                                    Usted tiene {appointments.length} turnos
-                                    pendientes de reseña.
+                                    Usted tiene {appointments.length} turno/s
+                                    pendiente/s de reseña.
                                 </div>
                                 <div className={styles["subtitle"]}>
                                     Por favor, seleccione un turno para dejar su
@@ -297,7 +323,11 @@ const DashboardPatient = () => {
                                                             styles["subtitle"]
                                                         }
                                                     >
-                                                        {appointment.specialty}
+                                                        {appointment.specialty
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        appointment.specialty.slice(1)}
+                                                        
                                                     </div>
                                                     <p>
                                                         Profesional:{" "}

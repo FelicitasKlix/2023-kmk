@@ -126,6 +126,14 @@ class Appointment:
         if appointment_document.exists:
             return Appointment(**appointment_document.to_dict())
         return None
+    
+    @staticmethod
+    def get_physician_from_appointment(id):
+        return db.collection("appointments").document(id).get().to_dict()["physician_id"]
+    
+    @staticmethod
+    def get_patient_from_appointment(id):
+        return db.collection("appointments").document(id).get().to_dict()["patient_id"]
 
     @staticmethod
     def is_appointment(id):
@@ -205,6 +213,23 @@ class Appointment:
         )
 
         return [appointment.to_dict() for appointment in appointments]
+    
+    @staticmethod
+    def get_all_rated_appointments_for_patient_with(uid):
+        if not Patient.is_patient(uid):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only patients can access this resource",
+            )
+        appointments = (
+            db.collection("appointments")
+            .where("patient_id", "==", uid)
+            .where("status", "==", "rated")
+            .order_by("date")
+            .get()
+        )
+
+        return [appointment.to_dict() for appointment in appointments]
 
     def delete(self):
         db.collection("appointments").document(self.id).delete()
@@ -264,7 +289,7 @@ class Appointment:
         patient = Patient.get_by_id(self.patient_id)
         date = datetime.fromtimestamp(self.date)
         requests.post(
-            "http://localhost:9000/emails/send",
+            "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "CANCELED_APPOINTMENT_DUE_TO_PHYSICIAN_DENIAL",
                 "data": {
