@@ -408,10 +408,6 @@ def add_score(add_score_request: LoadScoreRequest, uid=Depends(Auth.is_logged_in
         if Patient.get_by_id(uid):
             Score.add_physician_score(add_score_request, appointment_id)
             Appointment.update_rated_status(appointment_id)
-            #deberia sacar el remove_pending_to_score_patient_register, y cmabiar la logica en el has_pending_scores, para que vea la coleccion de appointments y vaya encontrando los closed y no rated
-            #appts = Appointment.get_all_closed_appointments_for_patient_with(uid)
-            #print("APPTS EN EL ENDPOINT: ",appts)
-            #Appointment.remove_pending_to_score_patient_register(uid, appointment_id)
             return {"message": "Scores added successfully"}
         if Physician.get_by_id(uid):
             Score.add_patient_score(add_score_request, appointment_id)

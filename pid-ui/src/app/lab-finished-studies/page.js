@@ -26,11 +26,6 @@ const DashboardLaboratory = () => {
     const apiURL = process.env.NEXT_PUBLIC_API_URL;
     const [studies, setStudies] = useState([]);
     const router = useRouter();
-    // const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [currentStudyId, setCurrentStudyId] = useState(null);
-    // const[currentPatientName, setCurrentPatientName] = useState(null);
-    // const[currentStudyTitle, setCurrentStudyTitle] = useState(null);
-    // const[currentLabDetails, setCurrentLabDetails] = useState(null);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -80,33 +75,6 @@ const DashboardLaboratory = () => {
         }
     };
 
-    // const handleFinishStudy = async (studyId) => {
-    //     toast.info("Finalizando estudio...");
-    //     console.log(studyId);
-    //     try {
-    //         await axios.post(
-    //             `${apiURL}studies/finish/${studyId}`
-    //         );
-    //         toast.success("Estudio finalizado exitosamente");
-    //         fetchFinishedStudies();
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // };
-
-    // const openModal = (study) => {
-    //     setCurrentStudyId(study.id);
-    //     setCurrentPatientName(study.patient_full_name);
-    //     setCurrentStudyTitle(study.title);
-    //     setCurrentLabDetails(study.lab_details);
-    //     console.log(study);
-    //     setIsModalOpen(true);
-    // };
-    
-    // const closeModal = () => {
-    //     setIsModalOpen(false);
-    // };
-
     useEffect(() => {
         axios.defaults.headers.common = {
             Authorization: `bearer ${localStorage.getItem("token")}`,
@@ -121,21 +89,6 @@ const DashboardLaboratory = () => {
 
     return (
         <div className={styles.dashboard}>
-
-            {/* <Modal
-                isOpen={isModalOpen}
-                onRequestClose={closeModal}
-                style={ratingModalStyles} // Puedes definir tus estilos personalizados aquí
-                ariaHideApp={false}
-            >
-                <div className={styles["title"]}>Información del Estudio - {currentStudyId}</div>
-                <div className={styles["subtitle"]}>Paciente: {currentPatientName}</div>
-                <div className={styles["subtitle"]}>Pedido: {currentStudyTitle}</div>
-                <div className={styles["subtitle"]}>Resultados: {currentLabDetails}</div>
-                <div className={styles["subtitle"]}>Archivo: {currentPatientName}</div>
-                <button onClick={closeModal} className={styles["delete-button"]}>Cerrar</button>
-                
-            </Modal> */}
 
             <LaboratoryTabBar highlight='Completados' />
             <Header role='laboratory' />
@@ -209,9 +162,7 @@ const DashboardLaboratory = () => {
                                                     ).toLocaleString("es-AR")}
                                                 </p>
                                                 <p>
-                                                {/* <a href={study.file_url} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
-                                                    Link de descarga del archivo
-                                                </a> */}
+                                                
                                                 {study.files && study.files.length > 0 ? (
                                                         study.files.map((file, fileIndex) => (
                                                             <div key={fileIndex}>
@@ -239,29 +190,6 @@ const DashboardLaboratory = () => {
                                                         )}
                                                 </p>
                                                 
-                                                {/* <div
-                                                    className={
-                                                        styles[
-                                                            "appointment-buttons-container"
-                                                        ]
-                                                    }
-                                                >
-                                                    <button
-                                                        className={
-                                                            styles[
-                                                                "standard-button"
-                                                            ]
-                                                        }
-                                                        onClick={() =>
-                                                            openModal(
-                                                                study
-                                                            )
-                                                        }
-                                                    >
-                                                        Visualizar{" "}
-                                                    </button>
-
-                                                </div> */}
                                             </div>
                                         ))}
                                     </div>
@@ -273,13 +201,6 @@ const DashboardLaboratory = () => {
                                 )}
                                 {/* ... */}
                             </div>
-                            {/* Modal de confirmación
-                            <ConfirmationModal
-                                    isOpen={showModal}
-                                    closeModal={() => setShowModal(false)}
-                                    confirmAction={handleDenyAppointment}
-                                    message="¿Estás seguro de que deseas rechazar este turno?"
-                                />  */}
                         </div>
                     </div>
 

@@ -29,111 +29,17 @@ const LoadStudy = () => {
     const inputRef = useRef(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState('');
-    //const studyId = props.studyId;
-    // Obtén el objeto router
-    //const router = useRouter();
-
-    // Accede al valor de studyId desde el objeto query
-    //const { studyId } = router.query;
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
     });
-
-    // const fetchData = async () => {
-    //     toast.info("Cargando información");
-    //     // try {
-    //     //     const response = await axios.get(`${apiURL}records/get-my-record`, {
-    //     //         httpsAgent: agent,
-    //     //     });
-    //     //     console.log(response);
-    //     //     setRecord(response.data.record);
-    //     //     console.log(response);
-    //     // } catch (error) {
-    //     //     console.error(error);
-    //     // }
-    // };
-
-    // const fetchMyAnalysis = async () => {
-
-    //     // try {
-    //     //     const response = await axios.get(`${apiURL}analysis`);
-    //     //     setAnalysis(response.data);
-    //     //     console.log(response);
-    //     // } catch (error) {
-    //     //     console.error(error);
-    //     // }
-    // };
-
-    // const handleDownload = (url) => {
-    //     const link = document.createElement("a");
-    //     link.download = url;
-
-    //     link.href = url;
-
-    //     link.click();
-    // };
-
-    // const handleDeleteClick = (file) => {
-    //     setSelectedFile(file);
-    //     setShowModal(true);
-    // };
-
-    // const handleDeleteFile = async () => {
-    //     setShowModal(false);
-    //     try {
-    //         const response = await axios.delete(`${apiURL}analysis/${selectedFile}`);
-    //         console.log(response);
-    //         toast.success("Analisis eliminado con exito");
-    //         fetchMyAnalysis();
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Error al eliminar analisis");
-    //     }
-    // };
-    
-    // const handleFileDelete = async (id) => {
-    //     try {
-    //         const response = await axios.delete(`${apiURL}analysis/${id}`);
-    //         console.log(response);
-    //         toast.success("Analisis eliminado con exito");
-    //         fetchMyAnalysis();
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Error al eliminar analisis");
-    //     }
-    // };
-
-    // const resetFileInput = () => {
-    //     inputRef.current.value = null;
-    //     setFile([]);
-    // };
-
-    // const onSubmit = async (e) => {
-    //     toast.info("Subiendo analisis");
-    //     const formData = new FormData();
-    //     Array.from(e).forEach((file_to_upload) =>
-    //         formData.append("analysis", file_to_upload)
-    //     );
-    //     try {
-    //         const response = await axios.post(`${apiURL}analysis`, formData);
-    //         console.log(response);
-    //         toast.success("Analisis subido con exito");
-    //         //fetchMyAnalysis();
-    //         resetFileInput();
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Error al subir analisis");
-    //     }
-    // };
 
     useEffect(() => {
         axios.defaults.headers.common = {
             Authorization: `bearer ${localStorage.getItem("token")}`,
         };
         toast.info("Cargando información ----> ");
-        // fetchData();
-        // fetchMyAnalysis().then(() => setIsLoading(false));
+        
     }, []);
 
     return (
@@ -158,8 +64,6 @@ const LoadStudy = () => {
                                 height={200}
                                 onClick={() => {
                                     toast.info("Actualizando...");
-                                    // fetchData();
-                                    // fetchMyAnalysis();
                                 }}
                             />
                             <div className={styles["subtitle"]}>
@@ -285,7 +189,6 @@ const LoadStudy = () => {
                                 <ConfirmationModal
                                     isOpen={showModal}
                                     closeModal={() => setShowModal(false)}
-                                    //confirmAction={handleDeleteFile}
                                     message="¿Estás seguro de que deseas eliminar este archivo?"
                                 />
 
@@ -305,8 +208,6 @@ const LoadStudy = () => {
                                         accept=".pdf"
                                         multiple={true}
                                         onChange={(e) => {
-                                            //onSubmit(e.target.files);
-                                            //setFile(e.target.files);
                                         }}
                                         onClick={(event) => {
                                             event.target.value = null;

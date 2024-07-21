@@ -150,14 +150,9 @@ class MedicalStudy:
     def update_study_details(study_id, details, files=None):
         update_data = {"lab_details": details}
         if files is not None:
-            #update_data["files"] = files
             files_data = [{"id": file.id, "url": file.url} for file in files]
             update_data["files"] = files_data
-            #update_data["file"] = file
-            #update_data["file_url"]= file_url
-        #print("---------------------")
-        #print(file)
-        #print("---------------------")
+        
         db.collection("medicalStudies").document(study_id).update(update_data)
 
 

@@ -63,16 +63,6 @@ const DashboardLaboratory = () => {
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
             zIndex: 1000 // Un valor mayor que el z-index del header
         },
-        // content: {
-        //     top: "50%",
-        //     left: "50%",
-        //     right: "auto",
-        //     bottom: "auto",
-        //     marginRight: "-50%",
-        //     transform: "translate(-50%, -50%)",
-        //     width: "80%",
-        //     zIndex: 1001
-        // },
     };
 
     const fetchInProgressStudies = async () => {
@@ -115,7 +105,7 @@ const DashboardLaboratory = () => {
           console.log(response);
           console.log(response.data);
           setLabAnalysis(response.data);
-          //return response.data;
+          
         } catch (error) {
           console.error('Error fetching laboratory analyses:', error);
           throw error;
@@ -126,7 +116,7 @@ const DashboardLaboratory = () => {
           const response = await axios.post(`${apiURL}analysis/laboratory/${currentPatientId}`, labAnalysis);
           console.log(response);
           console.log(response.data);
-          //setLabAnalysis(response.data);
+          
           return response.data;
         } catch (error) {
           console.error('Error fetching laboratory analyses:', error);
@@ -146,68 +136,30 @@ const DashboardLaboratory = () => {
         formData.append("patient_id", currentPatientId); // Asegúrate de obtener el patient_id del formulario
         console.log(formData);
         try {
-            //const response = await axios.post(`${apiURL}analysis/lab-upload`, formData);
+            
             const response = await axios.post(`${apiURL}analysis/lab-upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
             
-            //const analysisIds = response.data.map((analysis) => analysis.id);
-            //console.log(analysisIds);
-            
             toast.success("Análisis subido con éxito");
             const newAnalysisIds = response.data.map((analysis) => analysis.id);
             
-            //setCurrentAnalysis([...currentAnalysis, ...newAnalysisIds]);
-            //console.log(currentAnalysis);
             setCurrentAnalysis((prevAnalysis) => {
                 const updatedAnalysis = [...prevAnalysis, ...newAnalysisIds];
-                //fetchAnalysis(updatedAnalysis);
-                console.log("LISTA DE FILES: ", updatedAnalysis);
+                //console.log("LISTA DE FILES: ", updatedAnalysis);
                 getLaboratoryAnalyses(currentPatientId, updatedAnalysis);
                 const ids = updatedAnalysis.map(file => file.id);
-                //console.log("FILE IDS: ", ids);
                 fetchCurrentAnalysis(updatedAnalysis);
-                //setLabAnalysis(updatedAnalysis);
-                //fetchAnalysis(updatedAnalysis);
                 return updatedAnalysis;
             });
-            //getLaboratoryAnalyses(currentPatientId, labAnalysis);
-            //fetchAnalysis();
-            //file: labAnalysis[0].id,
-            //file_url:labAnalysis[0].url,
-            //const ids = labAnalysis.map(file => file.id);
-            //console.log("FILE IDS: ", ids);
-            //fetchCurrentAnalysis(ids);
-            //fetchLabAnalysis();
-            //fetchFilteredAnalysis(currentPatientId, analysisIds);
-            //setCurrentAnalysis(analysisIds);
             resetFileInput();
         } catch (error) {
             console.error(error);
             toast.error("Error al subir análisis");
         }
     };
-
-    // const handleDeleteClick = (file) => {
-    //     console.log(file);
-    //     setSelectedFile(file);
-    //     setShowConfirmationModal(true);
-    // };
-
-    // const handleDeleteFile = async () => {
-    //     setShowConfirmationModal(false);
-    //     try {
-    //         const response = await axios.delete(`${apiURL}analysis/${selectedFile}`);
-    //         console.log(response);
-    //         toast.success("Analisis eliminado con exito");
-    //         //fetchMyAnalysis();
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Error al eliminar analisis");
-    //     }
-    // };
 
     const handleDeleteClick = (file) => {
         console.log("FILE: ",file);
@@ -220,71 +172,28 @@ const DashboardLaboratory = () => {
         setShowConfirmationModal(false);
         console.log("SELECTED FILE: ", selectedFile);
         try {
-            // Asumiendo que tienes el patient_id disponible en el componente
+            
             const response = await axios.delete(`${apiURL}analysis/${selectedFile}`, {
                 params: { patient_id: currentPatientId }
             });
             console.log(response);
-            //toast.success("Análisis eliminado con éxito");
-            // const newAnalysisIds = response.data.map((analysis) => analysis.id);
-            // //setCurrentAnalysis([...currentAnalysis, ...newAnalysisIds]);
-            // //console.log(currentAnalysis);
-            // setCurrentAnalysis((prevAnalysis) => {
-            //     const updatedAnalysis = [...prevAnalysis, ...newAnalysisIds];
-            //     //fetchAnalysis(updatedAnalysis);
-            //     console.log(updatedAnalysis);
-            //     getLaboratoryAnalyses(currentPatientId, updatedAnalysis);
-            //     const ids = updatedAnalysis.map(file => file.id);
-            //     //console.log("FILE IDS: ", ids);
-            //     fetchCurrentAnalysis(updatedAnalysis);
-            //     //setLabAnalysis(updatedAnalysis);
-            //     //fetchAnalysis(updatedAnalysis);
-            //     return updatedAnalysis;
-            // });
             setCurrentAnalysis((prevAnalysis) => {
                 const updatedAnalysis = prevAnalysis.filter(analysis => analysis.id !== selectedFile);
                 console.log("Updated analysis list:", updatedAnalysis);
                 
-                // Actualizar la vista con la nueva lista de análisis
                 fetchCurrentAnalysis(updatedAnalysis);
                 
-                // Si necesitas hacer algo más con la lista actualizada, hazlo aquí
                 getLaboratoryAnalyses(currentPatientId, updatedAnalysis);
                 
                 return updatedAnalysis;
             });
-            //fetchCurrentAnalysis();
-            // Actualizar la lista de análisis
-            //getLaboratoryAnalyses(currentPatientId);
+
             toast.success("Análisis eliminado con éxito");
         } catch (error) {
             console.error(error);
             toast.error("Error al eliminar análisis");
         }
     };
-
-    // const fetchAnalysis = async (updatedAnalysis) => {
-    //     try {
-    //         const response = await axios.get(`${apiURL}analysis/laboratory`, {
-    //             patient_id: currentPatientId,
-    //             analysis_ids: updatedAnalysis
-    //         });
-    //         setAnalysis(response.data); // Assuming you have a state 'analysis' to store the fetched data
-    //         console.log(response);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
-    
-    // const fetchAnalysis = async () => {
-    //     try {
-    //         const response = await axios.get(`${apiURL}analysis/${currentPatientId}`);
-    //         setAnalysis(response.data); // Asumiendo que tienes un estado analysis para guardar los datos
-    //         console.log(response);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
 
     const fetchCurrentAnalysis = async (fileIds) => {
         try {
@@ -296,64 +205,11 @@ const DashboardLaboratory = () => {
         }
       };
 
-    // const onSubmit = async (e) => {
-    //     toast.info("Subiendo analisis");
-    //     const formData = new FormData();
-    //     Array.from(e).forEach((file_to_upload) =>
-    //         formData.append("analysis", file_to_upload)
-    //     );
-    //     console.log(formData);
-    //     const patient_id= "IhvmEqW05ggKhhxCTMbq0T3X9KuF";
-    //     try {
-    //         const response = await axios.post(`${apiURL}analysis/${patient_id}`, formData);
-    //         console.log(response);
-    //         toast.success("Analisis subido con exito");
-    //         //fetchMyAnalysis();
-    //         resetFileInput();
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Error al subir analisis");
-    //     }
-    // };
 
     const resetFileInput = () => {
         inputRef.current.value = null;
         setFile([]);
     };
-
-    /*const handleLoadStudyInfo = async (studyId) => {
-        toast.info("HOLAHOLAHOLA..."+studyId);
-        console.log(studyId);
-        //router.push("/lab-load-study-dashboard");
-        //const url = `/lab-load-study-dashboard?studyId=${encodeURIComponent(studyId)}`;
-        //router.push(url);
-        try {
-            // await axios.post(
-            //     `${apiURL}studies/finish/${studyId}`
-            // );
-            // toast.success("Estudio finalizado exitosamente");
-            // fetchInProgressStudies();
-        } catch (error) {
-            console.log(error);
-        }
-    };*/
-
-    // const handleLoadStudyInfo = async (studyId) => {
-    //     toast.info("HOLAHOLAHOLA...");
-    //     console.log(studyId);
-    
-    //     // Construir la URL con el studyId como parámetro
-    //     const url = `/lab-load-study-dashboard?studyId=${encodeURIComponent(studyId)}`;
-    
-    //     // Redirigir a la nueva URL
-    //     router.push(url);
-    
-    //     try {
-    //         // ... Resto del código ...
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // };
 
     const openModal = (study) => {
         setCurrentStudyId(study.id);
@@ -366,17 +222,12 @@ const DashboardLaboratory = () => {
     };
     
     const handleConfirm = async (details, studyId) => {
-        //console.log("Valor de details:", details);
-        //console.log("Id del estudio: ", studyId);
         console.log("Archivos: ",labAnalysis);
         let userData = {
-            //file: labAnalysis[0].id,
-            //file_url:labAnalysis[0].url,
             files: labAnalysis.map(file => ({ id: file.id, url: file.url })),
             lab_details: details,
         };
-        // Aquí puedes realizar cualquier lógica adicional con el valor de details
-        // ...
+
         try{
             const response = await axios.post(
                 `${apiURL}studies/update/${studyId}`,
@@ -402,7 +253,7 @@ const DashboardLaboratory = () => {
         fetchInProgressStudies()
             .then(() => setIsLoading(false)) // Marcar como cargado cuando la respuesta llega
             .catch(() => {
-                setIsLoading(false); // Asegúrate de marcar como cargado en caso de error
+                setIsLoading(false);
                 toast.error("Error al obtener los datos del usuario");
             });
     }, []);
@@ -413,7 +264,7 @@ const DashboardLaboratory = () => {
             <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
-                style={ratingModalStyles} // Puedes definir tus estilos personalizados aquí
+                style={ratingModalStyles}
                 ariaHideApp={false}
             >
                 <div className={styles["title"]}>Gestion del Estudio</div>
@@ -614,10 +465,6 @@ const DashboardLaboratory = () => {
                                                         }
                                                         onClick={() =>{
                                                             openModal(study);
-                                                            //openModal(study.id);
-                                                            /*handleLoadStudyInfo(
-                                                                study.id
-                                                            )*/
                                                         }
                                                             
                                                         }
@@ -651,13 +498,6 @@ const DashboardLaboratory = () => {
                                 )}
                                 {/* ... */}
                             </div>
-                            {/* Modal de confirmación
-                            <ConfirmationModal
-                                    isOpen={showModal}
-                                    closeModal={() => setShowModal(false)}
-                                    confirmAction={handleDenyAppointment}
-                                    message="¿Estás seguro de que deseas rechazar este turno?"
-                                />  */}
                         </div>
                     </div>
 

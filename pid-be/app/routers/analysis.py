@@ -43,28 +43,6 @@ async def upload_analysis(analysis: list[UploadFile], uid=Depends(Auth.is_logged
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"detail": "Internal server error"},
         )
-    
-# @router.post(
-#     "/{patient_id}",
-#     status_code=status.HTTP_201_CREATED,
-#     response_model=list[Union[SuccessfullAnalysisResponse, None]],
-#     responses={
-#         401: {"model": AnalysisErrorResponse},
-#         500: {"model": AnalysisErrorResponse},
-#     },
-# )
-# async def upload_analysis(patient_id: str, analysis: list[UploadFile], uid=Depends(Auth.is_logged_in)):
-#     analysis = Analysis(analysis=analysis, uid=uid, patient_id=patient_id)
-#     try:
-#         saved_analysis = await analysis.save()
-#         return saved_analysis
-#     except HTTPException as http_exception:
-#         return http_exception
-#     except:
-#         return JSONResponse(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             content={"detail": "Internal server error"},
-#         )
 
 
 @router.get(
@@ -128,7 +106,6 @@ def get_all_analysis(patient_id: str, uid=Depends(Auth.is_logged_in)):
 )
 def delete_analysis(analysis_id: str, patient_id: Optional[str] = None, uid=Depends(Auth.is_logged_in)):
     try:
-        #Analysis.delete(uid, analysis_id)
         if(Patient.is_patient(uid)):
             Analysis.delete(uid, analysis_id)
         elif(Laboratory.is_laboratory(uid)):
@@ -170,10 +147,6 @@ async def lab_upload_analysis(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User must be a laboratory to upload analysis",
         )
-
-    #analysis = Analysis(analysis=analysis, uid=patient_id)  # Usamos patient_id en lugar de uid
-    print(patient_id)
-    #analysis = Analysis(analysis=analysis, uid=uid, patient_id=patient_id)
     analysis_obj = Analysis(analysis=analysis, uid=uid, patient_id=patient_id)
     try:
         saved_analysis = await analysis_obj.save()

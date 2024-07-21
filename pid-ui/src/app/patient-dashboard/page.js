@@ -64,9 +64,6 @@ const DashboardPatient = () => {
                 //toast.info("Tiene reseñas pendientes por calificar");
                 setShowRatingModal(true);
               }
-            // if (response.data.pending_scores.length > 0) {
-            //     router.push("/patient-dashboard/pending-reviews");
-            // }
         } catch (error) {
             toast.error("Error al obtener las reseñas pendientes");
             console.error(error);

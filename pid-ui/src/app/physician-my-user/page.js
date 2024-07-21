@@ -251,7 +251,7 @@ const UserProfile = () => {
             )
             .then(() => setIsLoading(false)) // Marcar como cargado cuando la respuesta llega
             .catch(() => {
-                setIsLoading(false); // Asegúrate de marcar como cargado en caso de error
+                setIsLoading(false);
                 toast.error("Error al obtener los datos del usuario");
             });
     }, []);

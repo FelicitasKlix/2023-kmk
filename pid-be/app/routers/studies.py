@@ -331,8 +331,6 @@ def finish_study(
     * Throw an error if it fails.
     """
     try:
-        print(">>>>>>>>>>>>", study_request_info.files)
-        #print(">>>>>>>>>>>>", study_request_info.file_url)
         MedicalStudy.update_study_details(study_id, study_request_info.lab_details, study_request_info.files)
         '''requests.post(
             "http://localhost:9000/emails/send",

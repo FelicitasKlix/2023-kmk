@@ -51,7 +51,8 @@ const Admin = () => {
                 ? setSpecialties([])
                 : setSpecialties(response.data.specialties);
 
-            !firstLoad ? toast.success("Especialidades actualizadas") : null;
+            //!firstLoad ? toast.success("Especialidades actualizadas") : null;
+            toast.success("Especialidades actualizadas");
         } catch (error) {
             toast.error("Error al cargar especialidades");
             console.error(error);
@@ -161,22 +162,6 @@ const Admin = () => {
             }
         }
     };
-
-    // const handleDeleteStudyConfirmation = async () => {
-    //     setShowModal(false);
-    //     try {
-    //         toast.info("Borrando estudio...");
-    //         const response = await axios.delete(
-    //             `${apiURL}studies/delete/${selectedStudy}`
-    //         );
-    //         console.log(response.data);
-    //         toast.success("Estudio eliminado exitosamente");
-    //         fetchStudies();
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Error al borrar estudio");
-    //     }
-    // };
 
     const fetchPendingPhysicians = async () => {
         try {

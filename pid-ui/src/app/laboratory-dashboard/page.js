@@ -91,7 +91,7 @@ const DashboardLaboratory = () => {
         fetchPendingStudies()
             .then(() => setIsLoading(false)) // Marcar como cargado cuando la respuesta llega
             .catch(() => {
-                setIsLoading(false); // Asegúrate de marcar como cargado en caso de error
+                setIsLoading(false);
                 toast.error("Error al obtener los datos del usuario");
             });
     }, []);
@@ -195,13 +195,6 @@ const DashboardLaboratory = () => {
                                 )}
                                 {/* ... */}
                             </div>
-                            {/* Modal de confirmación
-                            <ConfirmationModal
-                                    isOpen={showModal}
-                                    closeModal={() => setShowModal(false)}
-                                    confirmAction={handleDenyAppointment}
-                                    message="¿Estás seguro de que deseas rechazar este turno?"
-                                />  */}
                         </div>
                     </div>
 

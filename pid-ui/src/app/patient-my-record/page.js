@@ -83,18 +83,6 @@ const MyRecord = () => {
             toast.error("Error al eliminar analisis");
         }
     };
-    
-    // const handleFileDelete = async (id) => {
-    //     try {
-    //         const response = await axios.delete(`${apiURL}analysis/${id}`);
-    //         console.log(response);
-    //         toast.success("Analisis eliminado con exito");
-    //         fetchMyAnalysis();
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Error al eliminar analisis");
-    //     }
-    // };
 
     const resetFileInput = () => {
         inputRef.current.value = null;

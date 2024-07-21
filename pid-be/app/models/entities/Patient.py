@@ -2,8 +2,6 @@ from fastapi import status, HTTPException
 
 from firebase_admin import firestore
 
-#from app.models.entities.Appointment import Appointment
-
 db = firestore.client()
 
 
@@ -47,17 +45,11 @@ class Patient:
     @staticmethod
     def has_pending_scores(id):
         pending_scores_doc = db.collection("patientsPendingToScore").document(id).get()
-        #pending_scores_doc = db.collection("patientsPendingToScore").document(appointment_id).where("patient_id", "==", id)
         if not pending_scores_doc.exists:
             return False
-        #pending_scores_query = db.collection("patientsPendingToScore").where("patient_id", "==", id)
-        #pending_scores_docs = pending_scores_query.get()
-        #appts = Appointment.get_all_closed_appointments_for_patient_with(id)
         appts = db.collection("appointments").where("patient_id", "==", id).where("status", "==", "closed").get()
-        print(">>>>>>>>")
         print(len(appts)>0)
         print(pending_scores_doc.to_dict())
-        #return len(pending_scores_doc.to_dict()) > 0
         return len(appts) > 0
 
     def create(self):

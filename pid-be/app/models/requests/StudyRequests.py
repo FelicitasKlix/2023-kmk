@@ -19,11 +19,6 @@ class FileInfo(BaseModel):
     id: str
     url: str
 
-# class UpdateStudyRequest(BaseModel):
-#     file: str = None
-#     lab_details: str = None
-#     file_url: str = None
-
 class UpdateStudyRequest(BaseModel):
     files: List[FileInfo] = None
     lab_details: str = None

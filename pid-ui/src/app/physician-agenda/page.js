@@ -274,7 +274,7 @@ const PhysicianAgenda = () => {
         fetchAppointments()
             .then(() => setIsLoading(false)) // Marcar como cargado cuando la respuesta llega
             .catch(() => {
-                setIsLoading(false); // Asegúrate de marcar como cargado en caso de error
+                setIsLoading(false);
             });
 
         fetchStudies();
@@ -288,7 +288,6 @@ const PhysicianAgenda = () => {
                     ariaHideApp={false}
                     isOpen={isAddObservationModalOpen}
                     onRequestClose={handleCloseEditModal}
-                    // style={customStyles}
                     style={ratingModalStyles}
                 >
                     <div
@@ -535,11 +534,6 @@ const PhysicianAgenda = () => {
                             }`}
                             onClick={handleAppointmentClosure}
                             disabled={!areAllFieldsValid() || disabledCloseAppointmentButton}
-                            // disabled={
-                            //     !newObservationContent ||
-                            //     !startTime ||
-                            //     disabledCloseAppointmentButton
-                            // }
                         >
                             {disabledCloseAppointmentButton ? "Procesando..." : "Agregar"}
                             

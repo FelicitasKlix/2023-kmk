@@ -13,15 +13,6 @@ class Analysis:
     uid: str
     patient_id: str
 
-    # def __init__(self, analysis: list[UploadFile], uid: str):
-    #     if not Patient.is_patient(uid):
-    #         raise HTTPException(
-    #             status_code=status.HTTP_403_FORBIDDEN,
-    #             detail="User must be a patient to upload analysis",
-    #         )
-    #     self.analysis = analysis
-    #     self.uid = uid
-
     def __init__(self, analysis: list[UploadFile], uid: str, patient_id: str = None):
         self.analysis = analysis
         self.uid = uid
@@ -81,15 +72,6 @@ class Analysis:
     
     @staticmethod
     def get_specific_files(file_ids, patient_id):
-        # analysis_list = []
-        # for file_id in file_ids:
-        #     # Asumimos que conocemos el patient_id. Si no, necesitaríamos buscarlo primero.
-        #     patient_docs = db.collection("analysis").document(patient_id).get()
-        #     for patient_doc in patient_docs:
-        #         file_doc = patient_doc.reference.collection("uploaded_analysis").document(file_id).get()
-        #         if file_doc.exists:
-        #             analysis_list.append(file_doc.to_dict())
-        #             break  # Salimos del bucle interno una vez que encontramos el archivo
             uploaded_analysis = (
                 db.collection("analysis")
                 .document(patient_id)
@@ -97,39 +79,11 @@ class Analysis:
                 .get()
             )
             analysis_list = list(map(lambda analysis: analysis.to_dict(), uploaded_analysis))
-            #print(analysis_list)
-            #return analysis_list
-            # Filter the analysis list to only include the documents with IDs in file_ids
+
             filtered_analysis_list = list(filter(lambda analysis: analysis['id'] in file_ids, analysis_list))
             
             print(filtered_analysis_list)
             return filtered_analysis_list
-
-    # @staticmethod
-    # def get_laboratory_analyses(patient_id, analysis_ids):
-    #     print("hola hola hola")
-    #     try:
-    #         # Obtener referencia al documento del paciente
-    #         patient_ref = db.collection("analysis").document(patient_id)
-            
-    #         # Filtrar los análisis por los IDs específicos proporcionados
-    #         uploaded_analysis = (
-    #             patient_ref
-    #             .collection("uploaded_analysis")
-    #             .where(firestore.FieldPath.document_id(), "in", analysis_ids)
-    #             .get()
-    #         )
-    #         print("!!!!!!!!!!")
-    #         print(analysis.to_dict() for analysis in uploaded_analysis)
-    #         # Transformar los resultados a un formato listo para la respuesta
-    #         return [analysis.to_dict() for analysis in uploaded_analysis]
-        
-    #     except Exception as e:
-    #         print(f"Error fetching laboratory analyses: {e}")
-    #         raise HTTPException(
-    #             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-    #             detail="Internal server error",
-    #         )
 
     @staticmethod
     def get_laboratory_analyses(patient_id: str, analysis_ids: list[str]):

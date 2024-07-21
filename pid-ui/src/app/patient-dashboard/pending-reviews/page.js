@@ -108,7 +108,7 @@ const DashboardPatient = () => {
             toast.success("Puntaje cargado exitosamente");
             //await delay(5000);
             fetchPendingReviews();
-            //setDisabledAddReiewButton(false);
+            
             setIsAddObervationModalOpen(false);
             
         } catch (error) {
@@ -253,7 +253,6 @@ const DashboardPatient = () => {
                                     : ""
                             }`}
                             onClick={addReview}
-                            //disabled={disabledAddReviewButton}
                             disabled={!areAllReviewsCompleted() || disabledAddReviewButton}
                         >
                             {disabledAddReviewButton ? "Procesando..." : "Agregar"}
