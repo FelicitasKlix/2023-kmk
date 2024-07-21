@@ -101,6 +101,11 @@ const DashboardLaboratory = () => {
             fetchInProgressStudies();
         } catch (error) {
             console.log(error);
+            switch(error.response.data.detail){
+                case "No details provided":
+                    toast.error("Debe completar los detalles del estudio");
+                    break;
+            }
         }
     };
 

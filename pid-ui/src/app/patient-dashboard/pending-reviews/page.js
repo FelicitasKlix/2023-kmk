@@ -108,8 +108,9 @@ const DashboardPatient = () => {
             toast.success("Puntaje cargado exitosamente");
             //await delay(5000);
             fetchPendingReviews();
+            //setDisabledAddReiewButton(false);
             setIsAddObervationModalOpen(false);
-            setDisabledAddReiewButton(false);
+            
         } catch (error) {
             toast.error("Error al agregar la puntaje");
             console.error(error);
@@ -149,7 +150,8 @@ const DashboardPatient = () => {
                     onRequestClose={handleCloseReviewModal}
                     style={ratingModalStyles}
                 >
-                    <div className={styles["new-record-section"]}>
+                    <div className={styles["new-record-section"]}
+                    onSubmit={addReview}>
                         <div className={styles["title"]}>Carga de Reseña</div>
 
                         <div

@@ -165,6 +165,7 @@ const DashboardPatient = () => {
             response.data.appointments == undefined
                 ? setAppointments([])
                 : setAppointments(response.data.appointments);
+            toast.success("Turnos actualizados")
         } catch (error) {
             toast.error("Error al cargar turnos");
             console.error(error);

@@ -266,7 +266,11 @@ def finish_study(
     try:
         study_title = MedicalStudy.get_study_title(study_id)
         lab_details = MedicalStudy.get_study_notes(study_id)
-        #file_url = MedicalStudy.get_study_file_url(study_id)
+        if(lab_details == None):
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"detail": "No details provided"},
+            )
         files = MedicalStudy.get_study_files(study_id)
         patient_id = MedicalStudy.get_patient_id_from_study_id(study_id)
         physician_id = MedicalStudy.get_physician_id_from_study_id(study_id)
@@ -275,10 +279,7 @@ def finish_study(
         completion_date = MedicalStudy.get_completion_date_from_study_id(study_id)
         physician_name = Physician.get_name_and_last_name(physician_id)
         laboratory_name = Laboratory.get_laboratory_name(laboratory_id)
-        #MedicalStudy.finish_medical_study(study_id, study_title, lab_details, patient_id)
         MedicalStudy.finish_medical_study(study_id, study_title, lab_details, files, patient_id, physician_name, laboratory_name, request_date, completion_date)
-        #patient_id = MedicalStudy.get_patient_id_from_study_id(study_id)
-        #physician_id = MedicalStudy.get_physician_id_from_study_id(study_id)
         requests.post(
             #"http://localhost:9000/emails/send",
             "https://two023-kmk-45yo.onrender.com/emails/send",
@@ -291,13 +292,13 @@ def finish_study(
                 },
             },
         )
-        return {"message": "Successfull request"}
+        return {"message": "Successful request"}
     except HTTPException as http_exception:
         return JSONResponse(
             status_code=http_exception.status_code,
             content={"detail": http_exception.detail},
         )
-    except:
+    except Exception:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"detail": "Internal server error"},
