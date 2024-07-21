@@ -71,7 +71,6 @@ async def create_appointment(
         patient = Patient.get_by_id(patient_id)
         date = datetime.fromtimestamp(appointment_creation_request.date)
         requests.post(
-            #"http://localhost:9000/emails/send",
             "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "PENDING_APPOINTMENT",
@@ -206,7 +205,6 @@ def delete_appointment_by_id(id: str, uid=Depends(Auth.is_logged_in)):
         date = datetime.fromtimestamp(appointment.date)
         physician = Physician.get_by_id(appointment.physician_id)
         requests.post(
-            #"http://localhost:9000/emails/send",
             "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "CANCELED_APPOINTMENT",
@@ -223,7 +221,6 @@ def delete_appointment_by_id(id: str, uid=Depends(Auth.is_logged_in)):
         )
         patient = Patient.get_by_id(appointment.patient_id)
         requests.post(
-            #"http://localhost:9000/emails/send",
             "https://two023-kmk-45yo.onrender.com/emails/send",
             json={
                 "type": "CANCELED_APPOINTMENT",
@@ -285,7 +282,6 @@ def update_appointment(
     patient = Patient.get_by_id(uid)
     date = datetime.fromtimestamp(update_appointment_request.date)
     requests.post(
-        #"http://localhost:9000/emails/send",
         "https://two023-kmk-45yo.onrender.com/emails/send",
         json={
             "type": "UPDATED_APPOINTMENT",
