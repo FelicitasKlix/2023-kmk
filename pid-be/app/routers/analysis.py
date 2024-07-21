@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, Depends, UploadFile, HTTPException, Form, Body
 from fastapi.responses import JSONResponse
-from typing import Union
+from typing import Union, Optional
 
 from app.models.entities.Auth import Auth
 from app.models.entities.Analysis import Analysis
@@ -126,9 +126,18 @@ def get_all_analysis(patient_id: str, uid=Depends(Auth.is_logged_in)):
         500: {"model": AnalysisErrorResponse},
     },
 )
-def delete_analysis(analysis_id: str, uid=Depends(Auth.is_logged_in)):
+def delete_analysis(analysis_id: str, patient_id: Optional[str] = None, uid=Depends(Auth.is_logged_in)):
     try:
-        Analysis.delete(uid, analysis_id)
+        #Analysis.delete(uid, analysis_id)
+        if(Patient.is_patient(uid)):
+            Analysis.delete(uid, analysis_id)
+        elif(Laboratory.is_laboratory(uid)):
+            Analysis.delete(patient_id, analysis_id)
+        if not (Patient.is_patient(uid) or Laboratory.is_laboratory(uid)):
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={"detail": "Only physicians or laboratories can view their analysis"},
+            )
         return {"message": "Analysis has been deleted successfully"}
     except HTTPException as http_exception:
         return JSONResponse(

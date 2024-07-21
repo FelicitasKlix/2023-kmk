@@ -361,6 +361,10 @@ const DashboardPatient = () => {
             transform: "translate(-50%, -50%)",
             width: "auto",
         },
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1000 // Un valor mayor que el z-index del header
+        },
     };
 
     useEffect(() => {

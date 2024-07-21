@@ -14,6 +14,7 @@ import { Footer, Header, LaboratoryTabBar, TabBar } from "../components/header";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { redirect } from "../components/userCheck";
 import { toast } from "react-toastify";
+import {ToastContainer} from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
 import InfoIcon from "@mui/icons-material/Info";
 import IconButton from "@mui/material/IconButton";
@@ -38,6 +39,8 @@ const DashboardLaboratory = () => {
     const [currentAnalysis, setCurrentAnalysis] = useState([]);
     const [labAnalysis, setLabAnalysis] = useState([]);
     const [uploadedFileIds, setUploadedFileIds] = useState([]);
+    const [selectedFile, setSelectedFile] = useState('');
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
     const agent = new https.Agent({
         rejectUnauthorized: false,
@@ -156,7 +159,7 @@ const DashboardLaboratory = () => {
             setCurrentAnalysis((prevAnalysis) => {
                 const updatedAnalysis = [...prevAnalysis, ...newAnalysisIds];
                 //fetchAnalysis(updatedAnalysis);
-                console.log(updatedAnalysis);
+                console.log("LISTA DE FILES: ", updatedAnalysis);
                 getLaboratoryAnalyses(currentPatientId, updatedAnalysis);
                 const ids = updatedAnalysis.map(file => file.id);
                 //console.log("FILE IDS: ", ids);
@@ -179,6 +182,79 @@ const DashboardLaboratory = () => {
         } catch (error) {
             console.error(error);
             toast.error("Error al subir análisis");
+        }
+    };
+
+    // const handleDeleteClick = (file) => {
+    //     console.log(file);
+    //     setSelectedFile(file);
+    //     setShowConfirmationModal(true);
+    // };
+
+    // const handleDeleteFile = async () => {
+    //     setShowConfirmationModal(false);
+    //     try {
+    //         const response = await axios.delete(`${apiURL}analysis/${selectedFile}`);
+    //         console.log(response);
+    //         toast.success("Analisis eliminado con exito");
+    //         //fetchMyAnalysis();
+    //     } catch (error) {
+    //         console.error(error);
+    //         toast.error("Error al eliminar analisis");
+    //     }
+    // };
+
+    const handleDeleteClick = (file) => {
+        console.log("FILE: ",file);
+        setSelectedFile(file);
+        console.log("ARCHIVO SELECCIONADO: ",selectedFile);
+        setShowConfirmationModal(true);
+    };
+    
+    const handleDeleteFile = async () => {
+        setShowConfirmationModal(false);
+        console.log("SELECTED FILE: ", selectedFile);
+        try {
+            // Asumiendo que tienes el patient_id disponible en el componente
+            const response = await axios.delete(`${apiURL}analysis/${selectedFile}`, {
+                params: { patient_id: currentPatientId }
+            });
+            console.log(response);
+            //toast.success("Análisis eliminado con éxito");
+            // const newAnalysisIds = response.data.map((analysis) => analysis.id);
+            // //setCurrentAnalysis([...currentAnalysis, ...newAnalysisIds]);
+            // //console.log(currentAnalysis);
+            // setCurrentAnalysis((prevAnalysis) => {
+            //     const updatedAnalysis = [...prevAnalysis, ...newAnalysisIds];
+            //     //fetchAnalysis(updatedAnalysis);
+            //     console.log(updatedAnalysis);
+            //     getLaboratoryAnalyses(currentPatientId, updatedAnalysis);
+            //     const ids = updatedAnalysis.map(file => file.id);
+            //     //console.log("FILE IDS: ", ids);
+            //     fetchCurrentAnalysis(updatedAnalysis);
+            //     //setLabAnalysis(updatedAnalysis);
+            //     //fetchAnalysis(updatedAnalysis);
+            //     return updatedAnalysis;
+            // });
+            setCurrentAnalysis((prevAnalysis) => {
+                const updatedAnalysis = prevAnalysis.filter(analysis => analysis.id !== selectedFile);
+                console.log("Updated analysis list:", updatedAnalysis);
+                
+                // Actualizar la vista con la nueva lista de análisis
+                fetchCurrentAnalysis(updatedAnalysis);
+                
+                // Si necesitas hacer algo más con la lista actualizada, hazlo aquí
+                getLaboratoryAnalyses(currentPatientId, updatedAnalysis);
+                
+                return updatedAnalysis;
+            });
+            //fetchCurrentAnalysis();
+            // Actualizar la lista de análisis
+            //getLaboratoryAnalyses(currentPatientId);
+            toast.success("Análisis eliminado con éxito");
+        } catch (error) {
+            console.error(error);
+            toast.error("Error al eliminar análisis");
         }
     };
 
@@ -434,6 +510,26 @@ const DashboardLaboratory = () => {
                 <button onClick={() => handleConfirm(details, currentStudyId, file)} className={styles["edit-button"]}>Confirmar</button>
                 
             </Modal>
+
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                style={{ zIndex: 10000 }} // Un z-index mayor que el del modal
+            />
+
+            <ConfirmationModal
+                isOpen={showConfirmationModal}
+                closeModal={() => setShowConfirmationModal(false)}
+                confirmAction={handleDeleteFile}
+                message="¿Estás seguro de que deseas eliminar este archivo?"
+            />
 
             <LaboratoryTabBar highlight='Proceso' />
             <Header role='laboratory' />
