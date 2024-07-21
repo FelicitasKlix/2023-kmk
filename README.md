@@ -1,7 +1,7 @@
 # 2023-kmk
 2023 - KMK
 
-### TEMA 2 - INTEGRACIÓN LABORATORIOS:
+## TEMA 2 - INTEGRACIÓN LABORATORIOS:
 
 - Se crea un nuevo tipo de usuario llamado "LABORATORIO".
 - Un médico puede asignar un estudio directamente a un laboratorio y este carga el estudio directamente en la ficha del paciente.
@@ -9,7 +9,11 @@
 - Estados del estudio: pedido, en proceso, entregado.
 - El laboratorio crea un informe cuando se realiza el estudio (también incluye fecha) y puede tener archivos adjuntos.
 
-##### Deployment:
+#### Deployment:
+
 Backend: Render
 
-Frontend: Vercel
+- Core API: (https://two023-kmk-core-main.onrender.com)
+- Notifications API: (https://two023-kmk-notifications-api-main.onrender.com)
+
+Frontend: Vercel (https://2023-kmk.vercel.app)

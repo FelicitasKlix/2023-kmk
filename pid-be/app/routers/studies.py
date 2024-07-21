@@ -175,7 +175,8 @@ def request_study(
         study.create()
         lab_email = Laboratory.get_laboratory_email(study_request_info.laboratory_id)
         requests.post(
-            "https://two023-kmk-45yo.onrender.com/emails/send",
+            #"https://two023-kmk-45yo.onrender.com/emails/send",
+            "https://two023-kmk-notifications-api-main.onrender.com/emails/send",
             json={
                 "type": "REQUESTED_STUDY",
                 "data": {
@@ -280,7 +281,8 @@ def finish_study(
         laboratory_name = Laboratory.get_laboratory_name(laboratory_id)
         MedicalStudy.finish_medical_study(study_id, study_title, lab_details, files, patient_id, physician_name, laboratory_name, request_date, completion_date)
         requests.post(
-            "https://two023-kmk-45yo.onrender.com/emails/send",
+            #"https://two023-kmk-45yo.onrender.com/emails/send",
+            "https://two023-kmk-notifications-api-main.onrender.com/emails/send",
             json={
                 "type": "FINISHED_STUDY",
                 "data": {

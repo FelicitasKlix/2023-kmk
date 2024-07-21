@@ -77,7 +77,8 @@ async def approve_physician(physician_id: str, uid=Depends(Auth.is_admin)):
         Admin.approve_physician(physician_id)
         physician = Physician.get_by_id(physician_id)
         requests.post(
-            "https://two023-kmk-45yo.onrender.com/emails/send",
+            #"https://two023-kmk-45yo.onrender.com/emails/send",
+            "https://two023-kmk-notifications-api-main.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_APPROVED_ACCOUNT",
                 "data": {
@@ -125,7 +126,8 @@ async def deny_physician(physician_id: str, uid=Depends(Auth.is_admin)):
         physician = Physician.get_by_id(physician_id)
         Admin.deny_physician(physician_id)
         requests.post(
-            "https://two023-kmk-45yo.onrender.com/emails/send",
+            #"https://two023-kmk-45yo.onrender.com/emails/send",
+            "https://two023-kmk-notifications-api-main.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_DENIED_ACCOUNT",
                 "data": {
@@ -174,7 +176,8 @@ async def unblock_physician(physician_id: str, uid=Depends(Auth.is_admin)):
         physician = Physician.get_blocked_by_id(physician_id)
         Admin.unblock_physician(physician)
         requests.post(
-            "https://two023-kmk-45yo.onrender.com/emails/send",
+            #"https://two023-kmk-45yo.onrender.com/emails/send",
+            "https://two023-kmk-notifications-api-main.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_UNBLOCKED_ACCOUNT",
                 "data": {
@@ -388,7 +391,8 @@ async def approve_laboratory(laboratory_id: str, uid=Depends(Auth.is_admin)):
         Admin.approve_laboratory(laboratory_id)
         lab = Laboratory.get_by_id(laboratory_id)
         requests.post(
-            "https://two023-kmk-45yo.onrender.com/emails/send",
+            #"https://two023-kmk-45yo.onrender.com/emails/send",
+            "https://two023-kmk-notifications-api-main.onrender.com/emails/send",
             json={
                 "type": "APPROVED_LABORATORY",
                 "data": {
@@ -467,7 +471,8 @@ async def deny_laboratory(laboratory_id: str, uid=Depends(Auth.is_admin)):
         lab = Laboratory.get_by_id(laboratory_id)
         Admin.deny_laboratory(laboratory_id)
         requests.post(
-            "https://two023-kmk-45yo.onrender.com/emails/send",
+            #"https://two023-kmk-45yo.onrender.com/emails/send",
+            "https://two023-kmk-notifications-api-main.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_DENIED_ACCOUNT",
                 "data": {
@@ -576,7 +581,8 @@ async def unblock_laboratory(lab_id: str, uid=Depends(Auth.is_admin)):
         laboratory = Laboratory.get_blocked_by_id(lab_id)
         Admin.unblock_lab(laboratory)
         requests.post(
-            "https://two023-kmk-45yo.onrender.com/emails/send",
+            #"https://two023-kmk-45yo.onrender.com/emails/send",
+            "https://two023-kmk-notifications-api-main.onrender.com/emails/send",
             json={
                 "type": "PHYSICIAN_UNBLOCKED_ACCOUNT",
                 "data": {
